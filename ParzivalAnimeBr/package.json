@@ -7,10 +7,9 @@
     "start": "node api/index.js"
   },
   "dependencies": {
-    "axios": "^1.6.8",
-    "cheerio": "^1.0.0-rc.12",
-    "express": "^4.19.2",
-    "node-cache": "^5.1.2",
-    "stremio-addon-sdk": "^1.14.3"
+    "axios": "latest",
+    "cheerio": "latest",
+    "express": "latest",
+    "node-cache": "latest",
+    "stremio-addon-sdk": "latest"
   }
-}
