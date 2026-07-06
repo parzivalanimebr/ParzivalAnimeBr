@@ -8,7 +8,7 @@ const cache = new NodeCache({ stdTTL: 3600 });
 
 const manifest = {
     id: "org.parzivalanimebr",
-    version: "1.0.8",
+    version: "1.0.9",
     name: "ParzivalAnimeBr",
     description: "Busca animes otimizada.",
     resources: ["stream"],
@@ -27,7 +27,10 @@ async function fetchViaProxy(url, timeout = 6000) {
         timeout,
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-            'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7'
+            'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Dest': 'document'
         }
     });
     return res.data;
@@ -66,8 +69,10 @@ function isJunkIframe(src) {
 // como se fosse video, entao usamos externalUrl: ele abre no navegador do
 // aparelho, onde o player em JS roda normalmente.
 function makeExternalStream(sourceName, index, embedUrl) {
+    let hostLabel = `Player ${index + 1}`;
+    try { hostLabel = new URL(embedUrl).hostname; } catch (e) { /* mantem fallback */ }
     return {
-        title: `${sourceName} - Player ${index + 1} (abre no navegador)`,
+        title: `${sourceName} - ${hostLabel} (abre no navegador)`,
         externalUrl: embedUrl,
         behaviorHints: { notWebReady: true }
     };
@@ -112,23 +117,21 @@ async function scrapeTopAnimes(name, ep) {
 
         let streams = [];
 
-        // Players "aviso": o link real do player vem dentro do parametro ?url=
-        $ep('a[href*="/aviso/?url="]').each((i, el) => {
-            const href = $ep(el).attr('href');
-            try {
-                const u = new URL(href, 'https://topanimes.net');
-                const real = u.searchParams.get('url');
-                if (real) streams.push(makeExternalStream('TopAnimes', i, real));
-            } catch (e) { /* ignora link malformado */ }
-        });
-
-        // Iframes "de verdade", se existirem (filtrando ads/disqus/social, que nao sao o player)
+        // Iframes: alguns sao players diretos, outros sao a pagina "/aviso/?url=..."
+        // que embrulha o link real do player dentro do parametro url= — precisa
+        // desembrulhar antes de usar.
         $ep('iframe').each((i, el) => {
             const src = $ep(el).attr('src') || $ep(el).attr('data-src');
-            console.error(`[topanimes][debug] iframe encontrado: ${src}`); // temporario p/ diagnostico
-            if (src && src.startsWith('http') && !isJunkIframe(src)) {
-                streams.push(makeExternalStream('TopAnimes', i, src));
+            if (!src || !src.startsWith('http') || isJunkIframe(src)) return;
+
+            let realUrl = src;
+            if (src.includes('/aviso/?url=')) {
+                try {
+                    const u = new URL(src, 'https://topanimes.net');
+                    realUrl = u.searchParams.get('url') || src;
+                } catch (e) { /* mantem src original se der erro */ }
             }
+            streams.push(makeExternalStream('TopAnimes', i, realUrl));
         });
 
         if (streams.length === 0) {
