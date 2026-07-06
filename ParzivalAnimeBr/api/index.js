@@ -8,7 +8,7 @@ const cache = new NodeCache({ stdTTL: 3600 });
 
 const manifest = {
     id: "org.parzivalanimebr",
-    version: "1.0.5",
+    version: "1.0.6",
     name: "ParzivalAnimeBr",
     description: "Busca animes otimizada.",
     resources: ["stream"],
@@ -19,16 +19,13 @@ const manifest = {
 
 const builder = new addonBuilder(manifest);
 
-// Faz o fetch via proxy allorigins e devolve o HTML já "desembrulhado"
-async function fetchViaProxy(url, timeout = 8000) {
+async function fetchViaProxy(url, timeout = 10000) {
     const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
     const res = await axios.get(proxyUrl, { timeout });
-    // allorigins às vezes retorna o objeto já parseado, às vezes como string
     const parsed = typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
     return parsed.contents;
 }
 
-// Normaliza texto para comparar (remove acento, minúsculo, espaços extras)
 function norm(str) {
     return (str || '')
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -37,84 +34,151 @@ function norm(str) {
         .trim();
 }
 
-async function scrapeSite(urlBase, name, ep, type) {
-    const cacheKey = `scrape:${urlBase}:${name}:${ep}`;
+// Slugifica um nome no mesmo padrão usado nas URLs dos sites (minusculo, hifens)
+function slugify(str) {
+    return norm(str).replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+// -------------------- TOPANIMES.NET --------------------
+async function scrapeTopAnimes(name, ep) {
+    const cacheKey = `top:${name}:${ep}`;
+    const cached = cache.get(cacheKey);
+    if (cached) return cached;
+
+    try {
+        // 1) Busca -> descobre o slug real do anime (nem sempre é igual ao slugify ingênuo)
+        const search = encodeURIComponent(name.split(':')[0]);
+        const searchHtml = await fetchViaProxy(`https://topanimes.net/?s=${search}`);
+        const $search = cheerio.load(searchHtml);
+
+        let animeUrl = '';
+        const targetName = norm(name.split(':')[0]);
+        $search('article a, .item a, h2 a, h3 a').each((i, el) => {
+            if (animeUrl) return;
+            const href = $search(el).attr('href') || '';
+            const text = norm($search(el).text());
+            if (href.includes('/animes/') && text && (text.includes(targetName) || targetName.includes(text))) {
+                animeUrl = href;
+            }
+        });
+        if (!animeUrl) {
+            console.error(`[topanimes] anime nao encontrado na busca: "${name}"`);
+            return [];
+        }
+
+        // extrai o slug de https://topanimes.net/animes/{slug}/
+        const slugMatch = animeUrl.match(/\/animes\/([^\/]+)\/?/);
+        if (!slugMatch) return [];
+        const slug = slugMatch[1];
+
+        // 2) Monta a URL do episódio direto (padrao confirmado do site)
+        const epUrl = `https://topanimes.net/episodio/${slug}-episodio-${ep}/`;
+        const epHtml = await fetchViaProxy(epUrl);
+        const $ep = cheerio.load(epHtml);
+
+        let streams = [];
+
+        // Players "aviso": o link real do player vem dentro do parametro ?url=
+        $ep('a[href*="/aviso/?url="]').each((i, el) => {
+            const href = $ep(el).attr('href');
+            try {
+                const u = new URL(href, 'https://topanimes.net');
+                const real = u.searchParams.get('url');
+                if (real) {
+                    streams.push({ title: `TopAnimes - Player ${i + 1}`, url: real });
+                }
+            } catch (e) { /* ignora link malformado */ }
+        });
+
+        // Iframes "de verdade", se existirem
+        $ep('iframe').each((i, el) => {
+            const src = $ep(el).attr('src') || $ep(el).attr('data-src');
+            if (src && src.startsWith('http')) {
+                streams.push({ title: `TopAnimes - Player iframe ${i + 1}`, url: src });
+            }
+        });
+
+        if (streams.length === 0) {
+            console.error(`[topanimes] nenhum player extraido em ${epUrl} (provavelmente ofuscado via JS)`);
+        }
+
+        cache.set(cacheKey, streams);
+        return streams;
+    } catch (e) {
+        console.error('[topanimes] erro:', e.message);
+        return [];
+    }
+}
+
+// -------------------- ANIMESDIGITAL.ORG --------------------
+async function scrapeAnimesDigital(name, ep) {
+    const cacheKey = `digi:${name}:${ep}`;
     const cached = cache.get(cacheKey);
     if (cached) return cached;
 
     try {
         const search = encodeURIComponent(name.split(':')[0]);
-
-        // 1) Busca no site -> pega o link da página do anime
-        const searchHtml = await fetchViaProxy(`${urlBase}/?s=${search}`);
+        const searchHtml = await fetchViaProxy(`https://animesdigital.org/?s=${search}`);
         const $search = cheerio.load(searchHtml);
 
-        let animeLink = '';
+        let animeUrl = '';
         const targetName = norm(name.split(':')[0]);
         $search('article a, .item a, h2 a, h3 a').each((i, el) => {
-            if (animeLink) return;
-            const href = $search(el).attr('href');
+            if (animeUrl) return;
+            const href = $search(el).attr('href') || '';
             const text = norm($search(el).text());
-            if (href && text && (text.includes(targetName) || targetName.includes(text))) {
-                animeLink = href;
+            if (href.includes('/anime/') && text && (text.includes(targetName) || targetName.includes(text))) {
+                animeUrl = href;
             }
         });
-        // Fallback: se não achou por nome, pega o primeiro link de card
-        if (!animeLink) {
-            animeLink = $search('article a, .item a').first().attr('href') || '';
-        }
-        if (!animeLink) {
-            console.error(`[${type}] nenhum link de anime encontrado na busca por "${name}"`);
+        if (!animeUrl) {
+            console.error(`[animesdigital] anime nao encontrado (ou bloqueado por anti-bot) para "${name}"`);
             return [];
         }
 
-        // 2) Abre a página do anime -> lista de episódios
-        const animeHtml = await fetchViaProxy(animeLink);
+        // A pagina do anime lista os episodios com link /video/a/{id}/ - o id nao segue padrao fixo
+        const animeHtml = await fetchViaProxy(animeUrl);
         const $anime = cheerio.load(animeHtml);
 
-        let epLink = '';
+        let epUrl = '';
         const epRegexes = [
             new RegExp(`epis[oó]dio\\s*0*${ep}\\b`, 'i'),
-            new RegExp(`\\bep\\s*0*${ep}\\b`, 'i'),
-            new RegExp(`[\\/-]0*${ep}[\\/-]?$`)
+            new RegExp(`\\bep\\s*0*${ep}\\b`, 'i')
         ];
         $anime('a').each((i, el) => {
-            if (epLink) return;
+            if (epUrl) return;
             const href = $anime(el).attr('href') || '';
             const text = $anime(el).text().trim();
-            const haystack = `${text} ${href}`;
-            if (epRegexes.some(re => re.test(haystack))) {
-                epLink = href;
+            if (href.includes('/video/') && epRegexes.some(re => re.test(text))) {
+                epUrl = href;
             }
         });
-        if (!epLink) {
-            console.error(`[${type}] episodio ${ep} nao encontrado na pagina ${animeLink}`);
+        if (!epUrl) {
+            console.error(`[animesdigital] episodio ${ep} nao encontrado em ${animeUrl}`);
             return [];
         }
 
-        // 3) Abre a página do episódio -> pega os players (iframes)
-        const epHtml = await fetchViaProxy(epLink);
+        const epHtml = await fetchViaProxy(epUrl);
         const $ep = cheerio.load(epHtml);
 
         let streams = [];
         $ep('iframe').each((i, el) => {
             const src = $ep(el).attr('src') || $ep(el).attr('data-src');
             if (src && src.startsWith('http')) {
-                streams.push({
-                    title: `${type === 'top' ? 'TopAnimes' : 'AnimesDigital'} - Player ${i + 1}`,
-                    url: src
-                });
+                streams.push({ title: `AnimesDigital - Player ${i + 1}`, url: src });
             }
         });
 
         if (streams.length === 0) {
-            console.error(`[${type}] nenhum iframe encontrado em ${epLink}`);
+            console.error(`[animesdigital] nenhum player extraido em ${epUrl}`);
         }
 
         cache.set(cacheKey, streams);
         return streams;
     } catch (e) {
-        console.error(`[scrapeSite ${urlBase}] erro:`, e.message);
+        // Se o site tiver protecao anti-bot (Cloudflare), o proxy provavelmente
+        // vai receber uma pagina de desafio em vez do HTML real, e isso cai aqui.
+        console.error('[animesdigital] erro (pode ser bloqueio anti-bot):', e.message);
         return [];
     }
 }
@@ -144,8 +208,8 @@ builder.defineStreamHandler(async ({ type, id }) => {
     }
 
     const results = await Promise.all([
-        scrapeSite('https://topanimes.net', name, ep, 'top'),
-        scrapeSite('https://animesdigital.org', name, ep, 'digi')
+        scrapeTopAnimes(name, ep),
+        scrapeAnimesDigital(name, ep)
     ]);
 
     return { streams: [...results[0], ...results[1]] };
