@@ -8,7 +8,7 @@ const cache = new NodeCache({ stdTTL: 3600 });
 
 const manifest = {
     id: "org.parzivalanimebr",
-    version: "2.0.0",
+    version: "2.1.0",
     name: "ParzivalAnimeBr",
     description: "Animes em português - busca nos melhores sites brasileiros.",
     resources: ["stream"],
@@ -19,7 +19,7 @@ const manifest = {
 
 const builder = new addonBuilder(manifest);
 
-// ─── Utilitários ─────────────────────────────────────────────────────────────
+// ─── Utilitários ──────────────────────────────────────────────────────────────
 
 function norm(str) {
     return (str || '')
@@ -36,31 +36,51 @@ async function fetchHtml(url, timeout = 15000, extraHeaders = {}) {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
             'Accept-Language': 'pt-BR,pt;q=0.9',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Referer': 'https://topanimes.net/',
             ...extraHeaders
         }
     });
     return res.data;
 }
 
-// ─── Extrator de MP4 do player csst.online / fsst.online ─────────────────────
-//
-// O player usa o padrão Playerjs. As URLs de vídeo ficam diretamente no HTML
-// do embed, dentro do campo "file:" da configuração do player:
-//
-//   file:"[360p]https://...1017112_360p.mp4/,[720p]https://...1017112_720p.mp4/,[1080p]https://...1017112.mp4/"
-//
-// Basta um axios.get + regex para extrair — sem Puppeteer.
+// ─── Limpa a URL do iframe — remove parâmetros extras injetados pelo site ─────
+// Ex: https://csst.online/embed/1017112&poster=https://... → https://csst.online/embed/1017112
+function cleanEmbedUrl(raw) {
+    try {
+        // Se a URL tem parâmetros colados com & sem ? antes, corta no primeiro &
+        // que não pertence ao host do embed
+        const ampIdx = raw.indexOf('&');
+        if (ampIdx !== -1 && !raw.includes('?')) {
+            raw = raw.substring(0, ampIdx);
+        }
+        return new URL(raw).toString();
+    } catch (e) {
+        return raw;
+    }
+}
 
-async function extractMp4FromEmbed(embedUrl) {
+// ─── Extrator de MP4 do player (Playerjs) ────────────────────────────────────
+//
+// O player coloca as URLs diretamente no HTML:
+//   file:"[360p]https://...mp4/,[720p]https://...mp4/,[1080p]https://...mp4/"
+//
+// Precisa enviar Referer correto para que o CDN (incvideo1.online) aceite
+// servir o vídeo ao Stremio. Sem o Referer o player retorna 403.
+
+async function extractMp4FromEmbed(rawEmbedUrl) {
+    const embedUrl = cleanEmbedUrl(rawEmbedUrl);
     const cached = cache.get(`mp4:${embedUrl}`);
     if (cached) return cached;
 
-    try {
-        const html = await fetchHtml(embedUrl, 12000, { 'Referer': embedUrl });
+    let origin;
+    try { origin = new URL(embedUrl).origin; } catch (e) { origin = ''; }
 
-        // Extrai o bloco do campo file:"..."
-        const fileMatch = html.match(/file\s*:\s*["']([^"']+)["']/);
+    try {
+        const html = await fetchHtml(embedUrl, 12000, {
+            'Referer': origin + '/',
+            'Origin': origin
+        });
+
+        const fileMatch = html.match(/file\s*:\s*["']([^"']{10,})["']/);
         if (!fileMatch) {
             console.error(`[extractMp4] campo "file" não encontrado em ${embedUrl}`);
             return [];
@@ -69,19 +89,37 @@ async function extractMp4FromEmbed(embedUrl) {
         const fileStr = fileMatch[1];
         const streams = [];
 
-        // Formato: [qualidade]url,[qualidade]url,...
-        // Também aceita URL única sem rótulo de qualidade
-        const qualityRegex = /\[([^\]]+)\](https?:\/\/[^\s,]+)/g;
+        // Formato: [qualidade]url, ...
+        const qualityRegex = /\[([^\]]+)\](https?:\/\/[^,\s"']+)/g;
         let match;
         while ((match = qualityRegex.exec(fileStr)) !== null) {
-            streams.push({ quality: match[1], url: match[2] });
+            streams.push({
+                quality: match[1],
+                url: match[2],
+                // CORREÇÃO PRINCIPAL: passa o Referer do embed para o CDN aceitar
+                behaviorHints: {
+                    notWebReady: false,
+                    proxyHeaders: {
+                        request: { 'Referer': origin + '/', 'Origin': origin }
+                    }
+                }
+            });
         }
 
-        // Se não encontrou nenhum com rótulo, tenta URLs soltas
+        // Fallback: URLs soltas sem rótulo
         if (streams.length === 0) {
             const urlRegex = /(https?:\/\/[^\s,"']+\.mp4[^\s,"']*)/g;
             while ((match = urlRegex.exec(fileStr)) !== null) {
-                streams.push({ quality: 'SD', url: match[1] });
+                streams.push({
+                    quality: 'SD',
+                    url: match[1],
+                    behaviorHints: {
+                        notWebReady: false,
+                        proxyHeaders: {
+                            request: { 'Referer': origin + '/', 'Origin': origin }
+                        }
+                    }
+                });
             }
         }
 
@@ -89,7 +127,7 @@ async function extractMp4FromEmbed(embedUrl) {
             console.log(`[extractMp4] ${streams.length} qualidade(s) extraída(s) de ${embedUrl}`);
             cache.set(`mp4:${embedUrl}`, streams);
         } else {
-            console.error(`[extractMp4] nenhuma URL de vídeo encontrada em ${embedUrl}`);
+            console.error(`[extractMp4] nenhuma URL de vídeo em ${embedUrl}`);
         }
 
         return streams;
@@ -109,7 +147,9 @@ async function scrapeTopAnimes(name, ep) {
 
     try {
         const search = encodeURIComponent(name.split(':')[0]);
-        const searchHtml = await fetchHtml(`https://topanimes.net/?s=${search}`);
+        const searchHtml = await fetchHtml(`https://topanimes.net/?s=${search}`, 15000, {
+            'Referer': 'https://topanimes.net/'
+        });
         const $search = cheerio.load(searchHtml);
 
         let animeUrl = '';
@@ -134,10 +174,9 @@ async function scrapeTopAnimes(name, ep) {
         const slug = slugMatch[1];
 
         const epUrl = `https://topanimes.net/episodio/${slug}-episodio-${ep}/`;
-        const epHtml = await fetchHtml(epUrl);
+        const epHtml = await fetchHtml(epUrl, 15000, { 'Referer': animeUrl });
         const $ep = cheerio.load(epHtml);
 
-        // Coleta iframes válidos
         const iframeSrcs = [];
         $ep('iframe').each((i, el) => {
             let src = $ep(el).attr('src') || $ep(el).attr('data-src');
@@ -151,34 +190,33 @@ async function scrapeTopAnimes(name, ep) {
                 } catch (e) {}
             }
 
-            // Ignora iframes de anúncio/social
-            const junk = ['disqus', 'facebook', 'twitter', 'doubleclick', 'google', 'gstatic', 'youtube.com/sub'];
+            const junk = ['disqus', 'facebook.com', 'twitter', 'doubleclick', 'googlesyndication', 'gstatic', 'youtube.com/sub'];
             if (junk.some(j => src.includes(j))) return;
 
-            iframeSrcs.push(src);
+            // Limpa parâmetros extras antes de guardar
+            iframeSrcs.push(cleanEmbedUrl(src));
         });
 
-        if (iframeSrcs.length === 0) {
-            console.error(`[topanimes] nenhum iframe encontrado em ${epUrl}`);
+        // Remove duplicatas
+        const uniqueSrcs = [...new Set(iframeSrcs)];
+
+        if (uniqueSrcs.length === 0) {
+            console.error(`[topanimes] nenhum iframe em ${epUrl}`);
             return [];
         }
 
-        console.log(`[topanimes] ${iframeSrcs.length} iframe(s) encontrado(s): ${iframeSrcs.join(', ')}`);
+        console.log(`[topanimes] ${uniqueSrcs.length} iframe(s): ${uniqueSrcs.join(', ')}`);
 
-        // Extrai MP4s de cada iframe
         const streams = [];
-        for (const src of iframeSrcs) {
+        for (const src of uniqueSrcs) {
             const mp4s = await extractMp4FromEmbed(src);
-            for (const { quality, url } of mp4s) {
-                let hostLabel = src;
-                try { hostLabel = new URL(src).hostname; } catch (e) {}
+            for (const item of mp4s) {
                 streams.push({
-                    title: `TopAnimes - ${quality}`,
-                    url,
-                    behaviorHints: { notWebReady: false }
+                    title: `TopAnimes - ${item.quality}`,
+                    url: item.url,
+                    behaviorHints: item.behaviorHints
                 });
             }
-            // Se não achou MP4, fallback para externalUrl
             if (mp4s.length === 0) {
                 let hostLabel = src;
                 try { hostLabel = new URL(src).hostname; } catch (e) {}
@@ -194,103 +232,6 @@ async function scrapeTopAnimes(name, ep) {
 
     } catch (e) {
         console.error('[topanimes] erro:', e.message);
-        return [];
-    }
-}
-
-// ─── Scraper: AnimesDigital.org ───────────────────────────────────────────────
-
-async function scrapeAnimesDigital(name, ep) {
-    const cacheKey = `digi:${name}:${ep}`;
-    const cached = cache.get(cacheKey);
-    if (cached) return cached;
-
-    try {
-        const search = encodeURIComponent(name.split(':')[0]);
-        const searchHtml = await fetchHtml(`https://animesdigital.org/?s=${search}`);
-        const $search = cheerio.load(searchHtml);
-
-        let animeUrl = '';
-        const targetName = norm(name.split(':')[0]);
-
-        $search('article a, .item a, h2 a, h3 a').each((i, el) => {
-            if (animeUrl) return;
-            const href = $search(el).attr('href') || '';
-            const text = norm($search(el).text());
-            if (href.includes('/anime/') && text && (text.includes(targetName) || targetName.includes(text))) {
-                animeUrl = href;
-            }
-        });
-
-        if (!animeUrl) {
-            console.error(`[animesdigital] anime não encontrado: "${name}"`);
-            return [];
-        }
-
-        const animeHtml = await fetchHtml(animeUrl);
-        const $anime = cheerio.load(animeHtml);
-
-        let epUrl = '';
-        const epRegexes = [
-            new RegExp(`epis[oó]dio\\s*0*${ep}\\b`, 'i'),
-            new RegExp(`\\bep\\s*0*${ep}\\b`, 'i')
-        ];
-        $anime('a').each((i, el) => {
-            if (epUrl) return;
-            const href = $anime(el).attr('href') || '';
-            const text = $anime(el).text().trim();
-            if (href.includes('/video/') && epRegexes.some(re => re.test(text))) {
-                epUrl = href;
-            }
-        });
-
-        if (!epUrl) {
-            console.error(`[animesdigital] ep ${ep} não encontrado em ${animeUrl}`);
-            return [];
-        }
-
-        const epHtml = await fetchHtml(epUrl);
-        const $ep = cheerio.load(epHtml);
-
-        const iframeSrcs = [];
-        $ep('iframe').each((i, el) => {
-            const src = $ep(el).attr('src') || $ep(el).attr('data-src');
-            if (!src || !src.startsWith('http')) return;
-            const junk = ['disqus', 'facebook', 'twitter', 'doubleclick', 'google', 'gstatic'];
-            if (junk.some(j => src.includes(j))) return;
-            iframeSrcs.push(src);
-        });
-
-        if (iframeSrcs.length === 0) {
-            console.error(`[animesdigital] nenhum iframe em ${epUrl}`);
-            return [];
-        }
-
-        const streams = [];
-        for (const src of iframeSrcs) {
-            const mp4s = await extractMp4FromEmbed(src);
-            for (const { quality, url } of mp4s) {
-                streams.push({
-                    title: `AnimesDigital - ${quality}`,
-                    url,
-                    behaviorHints: { notWebReady: false }
-                });
-            }
-            if (mp4s.length === 0) {
-                let hostLabel = src;
-                try { hostLabel = new URL(src).hostname; } catch (e) {}
-                streams.push({
-                    title: `AnimesDigital - ${hostLabel} (navegador)`,
-                    externalUrl: src
-                });
-            }
-        }
-
-        cache.set(cacheKey, streams);
-        return streams;
-
-    } catch (e) {
-        console.error('[animesdigital] erro:', e.message);
         return [];
     }
 }
@@ -323,14 +264,12 @@ builder.defineStreamHandler(async ({ type, id }) => {
     console.log(`[handler] buscando: "${name}" ep ${ep}`);
 
     const withFallback = (p) => p.catch(() => []);
-
-    // Timeout de 25s — suficiente para axios + regex, sem precisar de Puppeteer
     const timeoutGuard = new Promise(resolve => setTimeout(() => resolve('TIMEOUT'), 25000));
 
+    // Apenas topanimes por enquanto — animesdigital bloqueia com 403 consistentemente
     const results = await Promise.race([
         Promise.all([
-            withFallback(scrapeTopAnimes(name, ep)),
-            withFallback(scrapeAnimesDigital(name, ep))
+            withFallback(scrapeTopAnimes(name, ep))
         ]),
         timeoutGuard
     ]);
@@ -340,7 +279,7 @@ builder.defineStreamHandler(async ({ type, id }) => {
         return { streams: [] };
     }
 
-    const streams = [...results[0], ...results[1]];
+    const streams = [...results[0]];
     console.log(`[handler] ${streams.length} stream(s) para "${name}" ep ${ep}`);
     return { streams };
 });
@@ -350,7 +289,6 @@ builder.defineStreamHandler(async ({ type, id }) => {
 const app = express();
 app.use(getRouter(builder.getInterface()));
 
-// Vercel usa module.exports; local usa listen
 if (process.env.VERCEL) {
     module.exports = app;
 } else {
