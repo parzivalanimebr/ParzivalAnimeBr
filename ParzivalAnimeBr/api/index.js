@@ -8,7 +8,7 @@ const cache = new NodeCache({ stdTTL: 3600 });
 
 const manifest = {
     id: "org.parzivalanimebr",
-    version: "1.0.7",
+    version: "1.0.8",
     name: "ParzivalAnimeBr",
     description: "Busca animes otimizada.",
     resources: ["stream"],
@@ -44,6 +44,33 @@ function norm(str) {
 // Slugifica um nome no mesmo padrão usado nas URLs dos sites (minusculo, hifens)
 function slugify(str) {
     return norm(str).replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+// Dominios que aparecem como <iframe> mas nunca sao o player do episodio
+// (ads, comentarios, redes sociais, analytics). Ajuste essa lista conforme
+// os logs [debug] forem mostrando o que sobra.
+const JUNK_IFRAME_HOSTS = [
+    'disqus.com', 'disquscdn.com',
+    'facebook.com', 'twitter.com', 'x.com',
+    'doubleclick.net', 'googlesyndication.com', 'googleadservices.com',
+    'google.com/recaptcha', 'gstatic.com',
+    'youtube.com/subscribe_embed'
+];
+
+function isJunkIframe(src) {
+    return JUNK_IFRAME_HOSTS.some(h => src.includes(h));
+}
+
+// Streams desses sites sao paginas de player em JS (embed), nao arquivos de
+// midia direta (.mp4/.m3u8). O Stremio nao consegue "tocar" uma pagina HTML
+// como se fosse video, entao usamos externalUrl: ele abre no navegador do
+// aparelho, onde o player em JS roda normalmente.
+function makeExternalStream(sourceName, index, embedUrl) {
+    return {
+        title: `${sourceName} - Player ${index + 1} (abre no navegador)`,
+        externalUrl: embedUrl,
+        behaviorHints: { notWebReady: true }
+    };
 }
 
 // -------------------- TOPANIMES.NET --------------------
@@ -91,17 +118,16 @@ async function scrapeTopAnimes(name, ep) {
             try {
                 const u = new URL(href, 'https://topanimes.net');
                 const real = u.searchParams.get('url');
-                if (real) {
-                    streams.push({ title: `TopAnimes - Player ${i + 1}`, url: real });
-                }
+                if (real) streams.push(makeExternalStream('TopAnimes', i, real));
             } catch (e) { /* ignora link malformado */ }
         });
 
-        // Iframes "de verdade", se existirem
+        // Iframes "de verdade", se existirem (filtrando ads/disqus/social, que nao sao o player)
         $ep('iframe').each((i, el) => {
             const src = $ep(el).attr('src') || $ep(el).attr('data-src');
-            if (src && src.startsWith('http')) {
-                streams.push({ title: `TopAnimes - Player iframe ${i + 1}`, url: src });
+            console.error(`[topanimes][debug] iframe encontrado: ${src}`); // temporario p/ diagnostico
+            if (src && src.startsWith('http') && !isJunkIframe(src)) {
+                streams.push(makeExternalStream('TopAnimes', i, src));
             }
         });
 
@@ -171,8 +197,9 @@ async function scrapeAnimesDigital(name, ep) {
         let streams = [];
         $ep('iframe').each((i, el) => {
             const src = $ep(el).attr('src') || $ep(el).attr('data-src');
-            if (src && src.startsWith('http')) {
-                streams.push({ title: `AnimesDigital - Player ${i + 1}`, url: src });
+            console.error(`[animesdigital][debug] iframe encontrado: ${src}`); // temporario p/ diagnostico
+            if (src && src.startsWith('http') && !isJunkIframe(src)) {
+                streams.push(makeExternalStream('AnimesDigital', i, src));
             }
         });
 
