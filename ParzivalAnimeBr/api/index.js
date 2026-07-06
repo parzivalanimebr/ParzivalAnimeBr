@@ -5,13 +5,12 @@ const cheerio = require('cheerio');
 const NodeCache = require('node-cache');
 
 const cache = new NodeCache({ stdTTL: 86400 });
-const headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36' };
 
 const manifest = {
     id: "org.parzivalanimebr",
-    version: "1.0.2",
+    version: "1.0.3",
     name: "ParzivalAnimeBr",
-    description: "Busca animes.",
+    description: "Busca animes com bypass de proteção.",
     resources: ["stream"],
     types: ["anime", "series", "movie"],
     idPrefixes: ["kitsu:", "tt"],
@@ -20,33 +19,61 @@ const manifest = {
 
 const builder = new addonBuilder(manifest);
 
-
-// Função auxiliar de busca simplificada
-async function scrapeSite(urlBase, animeName, episode, type) {
+async function scrapeSite(urlBase, name, ep, type) {
     try {
-        // Remove caracteres especiais e reduz o nome para facilitar o encontro no site
-        const slug = animeName
-            .toLowerCase()
-            .replace(/[:!?]/g, "")
-            .replace(/\s+/g, "-");
+        const search = encodeURIComponent(name.split(':')[0]);
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`${urlBase}/?s=${search}`)}`;
+        const res = await axios.get(proxyUrl, { timeout: 10000 });
+        const $ = cheerio.load(JSON.parse(res.data.contents));
         
-        // Tenta buscar usando o nome simplificado, que se aproxima dos slugs dos sites
-        const searchUrl = `${urlBase}/?s=${encodeURIComponent(animeName.split(':')[0])}`;
-        const response = await axios.get(searchUrl, { timeout: 7000, headers });
-        const $ = cheerio.load(response.data);
-        
-        // Pega o primeiro link que contenha o número do episódio no título ou link
-        let episodeUrl = '';
+        let epLink = '';
         $('article a, .item a').each((i, el) => {
             const href = $(el).attr('href');
-            if (href && href.includes(episode)) {
-                episodeUrl = href;
-                return false; // para o loop
-            }
+            if (href && href.includes(ep)) epLink = href;
         });
+        if (!epLink) return [];
 
-        if (!episodeUrl) return [];
+        const epPage = await axios.get(`https://api.allorigins.win/get?url=${encodeURIComponent(epLink)}`, { timeout: 10000 });
+        const $ep = cheerio.load(JSON.parse(epPage.data.contents));
+        
+        let streams = [];
+        const selector = type === 'top' ? '.source-box iframe' : '.pagEpiAbasContainer iframe.metaframe';
+        
+        $ep(selector).each((i, el) => {
+            let src = $ep(el).attr('src');
+            if (src) streams.push({ title: `${type === 'top' ? 'TopAnimes' : 'AnimesDigital'} - Player ${i+1}`, url: src });
+        });
+        return streams;
+    } catch (e) { return []; }
+}
 
-        const epPage = await axios.get(episodeUrl, { timeout: 7000, headers });
-        const $ep = cheerio.load(epPage.data);
-        // ... (resto da lógica de extração de iframe igual à anterior)
+builder.defineStreamHandler(async ({ type, id }) => {
+    if (!id.startsWith("kitsu:") && !id.startsWith("tt")) return { streams: [] };
+    
+    let name = "";
+    let ep = "1";
+    try {
+        if (id.startsWith("kitsu:")) {
+            const [_, kId, s, e] = id.split(":");
+            ep = e || "1";
+            const res = await axios.get(`https://kitsu.io/api/edge/anime/${kId}`);
+            name = res.data.data.attributes.canonicalTitle;
+        } else {
+            const [ttId, s, e] = id.split(":");
+            ep = e || "1";
+            const res = await axios.get(`https://v3-cinemeta.strem.io/meta/${type}/${ttId}.json`);
+            name = res.data.meta.name;
+        }
+    } catch (e) { return { streams: [] }; }
+
+    const [s1, s2] = await Promise.all([
+        scrapeSite('https://topanimes.net', name, ep, 'top'),
+        scrapeSite('https://animesdigital.org', name, ep, 'digi')
+    ]);
+    
+    return { streams: [...s1, ...s2] };
+});
+
+const app = express();
+app.use(getRouter(builder.getInterface()));
+module.exports = app;
