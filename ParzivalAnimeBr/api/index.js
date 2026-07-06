@@ -24,7 +24,8 @@ async function scrapeSite(urlBase, name, ep, type) {
         const search = encodeURIComponent(name.split(':')[0]);
         const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`${urlBase}/?s=${search}`)}`;
         const res = await axios.get(proxyUrl, { timeout: 10000 });
-        const $ = cheerio.load(JSON.parse(res.data.contents));
+        const data = JSON.parse(res.data.contents);
+        const $ = cheerio.load(data);
         
         let epLink = '';
         $('article a, .item a').each((i, el) => {
@@ -34,7 +35,8 @@ async function scrapeSite(urlBase, name, ep, type) {
         if (!epLink) return [];
 
         const epPage = await axios.get(`https://api.allorigins.win/get?url=${encodeURIComponent(epLink)}`, { timeout: 10000 });
-        const $ep = cheerio.load(JSON.parse(epPage.data.contents));
+        const epData = JSON.parse(epPage.data.contents);
+        const $ep = cheerio.load(epData);
         
         let streams = [];
         const selector = type === 'top' ? '.source-box iframe' : '.pagEpiAbasContainer iframe.metaframe';
@@ -66,12 +68,12 @@ builder.defineStreamHandler(async ({ type, id }) => {
         }
     } catch (e) { return { streams: [] }; }
 
-    const [s1, s2] = await Promise.all([
+    const results = await Promise.all([
         scrapeSite('https://topanimes.net', name, ep, 'top'),
         scrapeSite('https://animesdigital.org', name, ep, 'digi')
     ]);
     
-    return { streams: [...s1, ...s2] };
+    return { streams: [...results[0], ...results[1]] };
 });
 
 const app = express();
