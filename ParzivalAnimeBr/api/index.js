@@ -8,7 +8,7 @@ const cache = new NodeCache({ stdTTL: 3600 });
 
 const manifest = {
     id: "org.parzivalanimebr",
-    version: "2.1.0",
+    version: "2.2.0",
     name: "ParzivalAnimeBr",
     description: "Animes em português - busca nos melhores sites brasileiros.",
     resources: ["stream"],
@@ -42,32 +42,66 @@ async function fetchHtml(url, timeout = 15000, extraHeaders = {}) {
     return res.data;
 }
 
-// ─── Limpa a URL do iframe — remove parâmetros extras injetados pelo site ─────
-// Ex: https://csst.online/embed/1017112&poster=https://... → https://csst.online/embed/1017112
+// ─── Limpa a URL do iframe ────────────────────────────────────────────────────
+// Remove parâmetros de tracking/decoração injetados pelo site:
+//   &img=, &poster=, &thumbnail=, etc.
+// Mantém parâmetros que fazem parte do embed (ex: ?id=...)
 function cleanEmbedUrl(raw) {
     try {
-        // Se a URL tem parâmetros colados com & sem ? antes, corta no primeiro &
-        // que não pertence ao host do embed
-        const ampIdx = raw.indexOf('&');
-        if (ampIdx !== -1 && !raw.includes('?')) {
-            raw = raw.substring(0, ampIdx);
-        }
-        return new URL(raw).toString();
+        const u = new URL(raw);
+        // Remove parâmetros que são decoração visual, não parte do player
+        ['img', 'poster', 'thumbnail', 'image', 'cover'].forEach(p => u.searchParams.delete(p));
+        // Remove parâmetros colados sem ? (ex: url&img=...)
+        return u.toString();
     } catch (e) {
-        return raw;
+        // Se não é URL válida, tenta cortar no primeiro & suspeito
+        const m = raw.match(/^(https?:\/\/[^&]+)/);
+        return m ? m[1] : raw;
     }
 }
 
-// ─── Extrator de MP4 do player (Playerjs) ────────────────────────────────────
-//
+// ─── Detecta se a URL já é um stream direto (.m3u8 ou .mp4) ─────────────────
+// Alguns iframes do topanimes têm o stream direto num parâmetro `id`
+// Ex: https://topanimes.net/antivirus2/yes/?id=sbt/.../cdn_stream.m3u8
+function extractDirectStream(src) {
+    try {
+        const u = new URL(src);
+        // Caso 1: a própria URL termina em .m3u8 ou .mp4
+        if (u.pathname.match(/\.(m3u8|mp4)$/i)) {
+            return { url: src, quality: 'HD' };
+        }
+        // Caso 2: parâmetro "id" contém o caminho do stream
+        const id = u.searchParams.get('id') || '';
+        if (id.match(/\.(m3u8|mp4)$/i)) {
+            // Reconstrói a URL base + o caminho do id
+            // Ex: https://topanimes.net/antivirus2/yes/ + sbt/.../cdn_stream.m3u8
+            const base = u.origin + u.pathname;
+            return { url: base + id, quality: 'HD' };
+        }
+        // Caso 3: a URL já é .mp4 direto (como sk-ru.alibabacdn.net)
+        const idFull = u.searchParams.get('id') || '';
+        if (idFull.match(/\.mp4/i)) {
+            return { url: idFull.startsWith('http') ? idFull : src, quality: 'HD' };
+        }
+    } catch (e) {}
+    return null;
+}
+
+// ─── Extrator de MP4/M3U8 do player Playerjs ─────────────────────────────────
 // O player coloca as URLs diretamente no HTML:
 //   file:"[360p]https://...mp4/,[720p]https://...mp4/,[1080p]https://...mp4/"
-//
-// Precisa enviar Referer correto para que o CDN (incvideo1.online) aceite
-// servir o vídeo ao Stremio. Sem o Referer o player retorna 403.
+// Envia Referer correto para que o CDN aceite servir o vídeo.
 
 async function extractMp4FromEmbed(rawEmbedUrl) {
     const embedUrl = cleanEmbedUrl(rawEmbedUrl);
+
+    // Verifica se já é um stream direto antes de tentar fetch
+    const direct = extractDirectStream(embedUrl);
+    if (direct) {
+        console.log(`[extractMp4] stream direto detectado: ${direct.url}`);
+        return [{ ...direct, behaviorHints: { notWebReady: false } }];
+    }
+
     const cached = cache.get(`mp4:${embedUrl}`);
     if (cached) return cached;
 
@@ -89,14 +123,14 @@ async function extractMp4FromEmbed(rawEmbedUrl) {
         const fileStr = fileMatch[1];
         const streams = [];
 
-        // Formato: [qualidade]url, ...
+        // Formato: [qualidade]url,...
         const qualityRegex = /\[([^\]]+)\](https?:\/\/[^,\s"']+)/g;
         let match;
         while ((match = qualityRegex.exec(fileStr)) !== null) {
             streams.push({
                 quality: match[1],
                 url: match[2],
-                // CORREÇÃO PRINCIPAL: passa o Referer do embed para o CDN aceitar
+                // Passa Referer do embed para o CDN aceitar a requisição do Stremio
                 behaviorHints: {
                     notWebReady: false,
                     proxyHeaders: {
@@ -106,25 +140,20 @@ async function extractMp4FromEmbed(rawEmbedUrl) {
             });
         }
 
-        // Fallback: URLs soltas sem rótulo
+        // Fallback: URLs soltas
         if (streams.length === 0) {
-            const urlRegex = /(https?:\/\/[^\s,"']+\.mp4[^\s,"']*)/g;
+            const urlRegex = /(https?:\/\/[^\s,"']+\.(mp4|m3u8)[^\s,"']*)/g;
             while ((match = urlRegex.exec(fileStr)) !== null) {
                 streams.push({
                     quality: 'SD',
                     url: match[1],
-                    behaviorHints: {
-                        notWebReady: false,
-                        proxyHeaders: {
-                            request: { 'Referer': origin + '/', 'Origin': origin }
-                        }
-                    }
+                    behaviorHints: { notWebReady: false, proxyHeaders: { request: { 'Referer': origin + '/' } } }
                 });
             }
         }
 
         if (streams.length > 0) {
-            console.log(`[extractMp4] ${streams.length} qualidade(s) extraída(s) de ${embedUrl}`);
+            console.log(`[extractMp4] ${streams.length} qualidade(s) de ${embedUrl}`);
             cache.set(`mp4:${embedUrl}`, streams);
         } else {
             console.error(`[extractMp4] nenhuma URL de vídeo em ${embedUrl}`);
@@ -193,11 +222,9 @@ async function scrapeTopAnimes(name, ep) {
             const junk = ['disqus', 'facebook.com', 'twitter', 'doubleclick', 'googlesyndication', 'gstatic', 'youtube.com/sub'];
             if (junk.some(j => src.includes(j))) return;
 
-            // Limpa parâmetros extras antes de guardar
-            iframeSrcs.push(cleanEmbedUrl(src));
+            iframeSrcs.push(src); // guarda a URL original, cleanEmbedUrl é feito dentro do extrator
         });
 
-        // Remove duplicatas
         const uniqueSrcs = [...new Set(iframeSrcs)];
 
         if (uniqueSrcs.length === 0) {
@@ -219,10 +246,10 @@ async function scrapeTopAnimes(name, ep) {
             }
             if (mp4s.length === 0) {
                 let hostLabel = src;
-                try { hostLabel = new URL(src).hostname; } catch (e) {}
+                try { hostLabel = new URL(cleanEmbedUrl(src)).hostname; } catch (e) {}
                 streams.push({
                     title: `TopAnimes - ${hostLabel} (navegador)`,
-                    externalUrl: src
+                    externalUrl: cleanEmbedUrl(src)
                 });
             }
         }
@@ -266,11 +293,8 @@ builder.defineStreamHandler(async ({ type, id }) => {
     const withFallback = (p) => p.catch(() => []);
     const timeoutGuard = new Promise(resolve => setTimeout(() => resolve('TIMEOUT'), 25000));
 
-    // Apenas topanimes por enquanto — animesdigital bloqueia com 403 consistentemente
     const results = await Promise.race([
-        Promise.all([
-            withFallback(scrapeTopAnimes(name, ep))
-        ]),
+        Promise.all([withFallback(scrapeTopAnimes(name, ep))]),
         timeoutGuard
     ]);
 
