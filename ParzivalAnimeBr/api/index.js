@@ -27,8 +27,9 @@ async function scrapeSite(urlBase, name, ep, type) {
         const data = JSON.parse(res.data.contents);
         const $ = cheerio.load(data);
         
+        // Tenta encontrar o link do episódio de forma mais flexível
         let epLink = '';
-        $('article a, .item a').each((i, el) => {
+        $('article a, .item a, .list-episodes a').each((i, el) => {
             const href = $(el).attr('href');
             if (href && href.includes(ep)) epLink = href;
         });
@@ -39,43 +40,13 @@ async function scrapeSite(urlBase, name, ep, type) {
         const $ep = cheerio.load(epData);
         
         let streams = [];
-        const selector = type === 'top' ? '.source-box iframe' : '.pagEpiAbasContainer iframe.metaframe';
-        
-        $ep(selector).each((i, el) => {
+        // Captura QUALQUER iframe presente na página, aumentando a chance de sucesso
+        $ep('iframe').each((i, el) => {
             let src = $ep(el).attr('src');
-            if (src) streams.push({ title: `${type === 'top' ? 'TopAnimes' : 'AnimesDigital'} - Player ${i+1}`, url: src });
+            if (src && (src.includes('player') || src.includes('embed') || src.includes('video'))) {
+                streams.push({ title: `${type === 'top' ? 'TopAnimes' : 'AnimesDigital'} - Player ${i+1}`, url: src });
+            }
         });
         return streams;
     } catch (e) { return []; }
 }
-
-builder.defineStreamHandler(async ({ type, id }) => {
-    if (!id.startsWith("kitsu:") && !id.startsWith("tt")) return { streams: [] };
-    
-    let name = "";
-    let ep = "1";
-    try {
-        if (id.startsWith("kitsu:")) {
-            const [_, kId, s, e] = id.split(":");
-            ep = e || "1";
-            const res = await axios.get(`https://kitsu.io/api/edge/anime/${kId}`);
-            name = res.data.data.attributes.canonicalTitle;
-        } else {
-            const [ttId, s, e] = id.split(":");
-            ep = e || "1";
-            const res = await axios.get(`https://v3-cinemeta.strem.io/meta/${type}/${ttId}.json`);
-            name = res.data.meta.name;
-        }
-    } catch (e) { return { streams: [] }; }
-
-    const results = await Promise.all([
-        scrapeSite('https://topanimes.net', name, ep, 'top'),
-        scrapeSite('https://animesdigital.org', name, ep, 'digi')
-    ]);
-    
-    return { streams: [...results[0], ...results[1]] };
-});
-
-const app = express();
-app.use(getRouter(builder.getInterface()));
-module.exports = app;
