@@ -8,7 +8,7 @@ const cache = new NodeCache({ stdTTL: 3600 });
 
 const manifest = {
     id: "org.parzivalanimebr",
-    version: "1.1.0",
+    version: "1.1.1",
     name: "ParzivalAnimeBr",
     description: "Busca animes otimizada.",
     resources: ["stream"],
@@ -94,9 +94,25 @@ async function resolveEmbedToStreams(sourceName, index, embedUrl) {
         const html = await fetchViaProxy(embedUrl, 6000);
         const sources = resolvePlayerJsSources(html);
         if (sources.length > 0) {
+            // Muitos CDNs de video (incluindo o incvideo1.online usado pelo
+            // csst.online) exigem que o Referer bata com o site do embed,
+            // senao recusam a requisicao (foi o caso do "acha mas nao toca"
+            // dentro do player nativo do Nuvio). O campo proxyHeaders do
+            // Stremio manda o app anexar esses headers na hora de baixar o
+            // video, resolvendo isso sem precisar abrir navegador externo.
+            const origin = new URL(embedUrl).origin;
             return sources.map(s => ({
                 title: `${sourceName} - ${s.quality}`,
-                url: s.url
+                url: s.url,
+                behaviorHints: {
+                    notWebReady: true,
+                    proxyHeaders: {
+                        request: {
+                            'Referer': `${origin}/`,
+                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
+                        }
+                    }
+                }
             }));
         }
     } catch (e) {
