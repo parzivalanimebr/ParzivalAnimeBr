@@ -8,7 +8,7 @@ const cache = new NodeCache({ stdTTL: 3600 });
 
 const manifest = {
     id: "org.parzivalanimebr",
-    version: "1.0.6",
+    version: "1.0.7",
     name: "ParzivalAnimeBr",
     description: "Busca animes otimizada.",
     resources: ["stream"],
@@ -19,11 +19,18 @@ const manifest = {
 
 const builder = new addonBuilder(manifest);
 
-async function fetchViaProxy(url, timeout = 10000) {
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-    const res = await axios.get(proxyUrl, { timeout });
-    const parsed = typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
-    return parsed.contents;
+// CORS so existe no navegador - rodando em Node (servidor) podemos chamar o
+// site direto, sem proxy. Isso elimina o allorigins.win (lento/instavel, era
+// a causa dos timeouts de 15-17s vistos nos logs) do meio do caminho.
+async function fetchViaProxy(url, timeout = 6000) {
+    const res = await axios.get(url, {
+        timeout,
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+            'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7'
+        }
+    });
+    return res.data;
 }
 
 function norm(str) {
@@ -207,10 +214,23 @@ builder.defineStreamHandler(async ({ type, id }) => {
         return { streams: [] };
     }
 
-    const results = await Promise.all([
-        scrapeTopAnimes(name, ep),
-        scrapeAnimesDigital(name, ep)
+    // Se um dos sites travar, devolve o que já foi achado em vez de deixar o
+    // Stremio esperando (limite total de 12s, bem abaixo do timeout do Vercel).
+    const withFallback = (p) => p.catch(() => []);
+    const timeoutGuard = new Promise((resolve) => setTimeout(() => resolve('TIMEOUT'), 12000));
+
+    const results = await Promise.race([
+        Promise.all([
+            withFallback(scrapeTopAnimes(name, ep)),
+            withFallback(scrapeAnimesDigital(name, ep))
+        ]),
+        timeoutGuard
     ]);
+
+    if (results === 'TIMEOUT') {
+        console.error('[defineStreamHandler] timeout geral atingido, devolvendo vazio');
+        return { streams: [] };
+    }
 
     return { streams: [...results[0], ...results[1]] };
 });
