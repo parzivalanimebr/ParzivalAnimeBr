@@ -8,7 +8,7 @@ const cache = new NodeCache({ stdTTL: 3600 });
 
 const manifest = {
     id: "org.parzivalanimebr",
-    version: "1.1.1",
+    version: "1.1.2",
     name: "ParzivalAnimeBr",
     description: "Busca animes otimizada.",
     resources: ["stream"],
@@ -89,31 +89,38 @@ function resolvePlayerJsSources(html) {
 // Tenta resolver um link de embed (iframe) para arquivo de video direto.
 // Se conseguir, retorna streams "nativos" (tocam dentro do proprio app).
 // Se nao conseguir, cai pro externalUrl (abre no navegador) como ultimo recurso.
-async function resolveEmbedToStreams(sourceName, index, embedUrl) {
+async function resolveEmbedToStreams(sourceName, index, embedUrl, originSiteUrl) {
     try {
         const html = await fetchViaProxy(embedUrl, 6000);
         const sources = resolvePlayerJsSources(html);
         if (sources.length > 0) {
-            // Muitos CDNs de video (incluindo o incvideo1.online usado pelo
-            // csst.online) exigem que o Referer bata com o site do embed,
-            // senao recusam a requisicao (foi o caso do "acha mas nao toca"
-            // dentro do player nativo do Nuvio). O campo proxyHeaders do
-            // Stremio manda o app anexar esses headers na hora de baixar o
-            // video, resolvendo isso sem precisar abrir navegador externo.
-            const origin = new URL(embedUrl).origin;
-            return sources.map(s => ({
-                title: `${sourceName} - ${s.quality}`,
-                url: s.url,
-                behaviorHints: {
-                    notWebReady: true,
-                    proxyHeaders: {
-                        request: {
-                            'Referer': `${origin}/`,
-                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
+            const embedOrigin = new URL(embedUrl).origin;
+            const siteOrigin = originSiteUrl ? new URL(originSiteUrl).origin : null;
+            const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
+
+            // Nao sabemos com certeza qual Referer o CDN exige (o do embed ou
+            // o do site original), entao geramos as duas variantes pra testar.
+            const referers = [{ label: 'embed', value: `${embedOrigin}/` }];
+            if (siteOrigin && siteOrigin !== embedOrigin) {
+                referers.push({ label: 'site', value: `${siteOrigin}/` });
+            }
+
+            const streams = [];
+            for (const s of sources) {
+                for (const ref of referers) {
+                    streams.push({
+                        title: `${sourceName} - ${s.quality} (ref:${ref.label})`,
+                        url: s.url,
+                        behaviorHints: {
+                            notWebReady: true,
+                            proxyHeaders: {
+                                request: { 'Referer': ref.value, 'User-Agent': UA }
+                            }
                         }
-                    }
+                    });
                 }
-            }));
+            }
+            return streams;
         }
     } catch (e) {
         console.error(`[resolveEmbedToStreams] falhou em ${embedUrl}:`, e.message);
@@ -192,7 +199,7 @@ async function scrapeTopAnimes(name, ep) {
         // Pra cada candidato, tenta extrair o link direto do arquivo de video
         // (Playerjs); se nao conseguir, cai pro externalUrl como ultimo recurso.
         const resolved = await Promise.all(
-            candidates.map((url, i) => resolveEmbedToStreams('TopAnimes', i, url))
+            candidates.map((url, i) => resolveEmbedToStreams('TopAnimes', i, url, 'https://topanimes.net'))
         );
         let streams = resolved.flat();
 
@@ -268,7 +275,7 @@ async function scrapeAnimesDigital(name, ep) {
         });
 
         const resolved = await Promise.all(
-            candidates.map((url, i) => resolveEmbedToStreams('AnimesDigital', i, url))
+            candidates.map((url, i) => resolveEmbedToStreams('AnimesDigital', i, url, 'https://animesdigital.org'))
         );
         let streams = resolved.flat();
 
