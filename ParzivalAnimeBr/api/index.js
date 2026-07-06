@@ -8,7 +8,7 @@ const cache = new NodeCache({ stdTTL: 3600 });
 
 const manifest = {
     id: "org.parzivalanimebr",
-    version: "2.2.0",
+    version: "2.3.0",
     name: "ParzivalAnimeBr",
     description: "Animes em português - busca nos melhores sites brasileiros.",
     resources: ["stream"],
@@ -18,6 +18,19 @@ const manifest = {
 };
 
 const builder = new addonBuilder(manifest);
+
+// ─── Base URL do próprio addon (para montar as URLs de proxy) ───────────────
+// Vercel expõe VERCEL_URL automaticamente, mas ela muda a cada deploy de preview.
+// Priorizamos um domínio fixo se configurado.
+function getSelfBaseUrl(req) {
+    if (process.env.PUBLIC_URL) return process.env.PUBLIC_URL.replace(/\/$/, '');
+    if (req && req.headers && req.headers.host) {
+        const proto = req.headers['x-forwarded-proto'] || 'https';
+        return `${proto}://${req.headers.host}`;
+    }
+    if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+    return 'http://localhost:7000';
+}
 
 // ─── Utilitários ──────────────────────────────────────────────────────────────
 
@@ -42,68 +55,64 @@ async function fetchHtml(url, timeout = 15000, extraHeaders = {}) {
     return res.data;
 }
 
-// ─── Limpa a URL do iframe ────────────────────────────────────────────────────
-// Remove parâmetros de tracking/decoração injetados pelo site:
-//   &img=, &poster=, &thumbnail=, etc.
-// Mantém parâmetros que fazem parte do embed (ex: ?id=...)
 function cleanEmbedUrl(raw) {
     try {
         const u = new URL(raw);
-        // Remove parâmetros que são decoração visual, não parte do player
         ['img', 'poster', 'thumbnail', 'image', 'cover'].forEach(p => u.searchParams.delete(p));
-        // Remove parâmetros colados sem ? (ex: url&img=...)
         return u.toString();
     } catch (e) {
-        // Se não é URL válida, tenta cortar no primeiro & suspeito
         const m = raw.match(/^(https?:\/\/[^&]+)/);
         return m ? m[1] : raw;
     }
 }
 
-// ─── Detecta se a URL já é um stream direto (.m3u8 ou .mp4) ─────────────────
-// Alguns iframes do topanimes têm o stream direto num parâmetro `id`
-// Ex: https://topanimes.net/antivirus2/yes/?id=sbt/.../cdn_stream.m3u8
 function extractDirectStream(src) {
     try {
         const u = new URL(src);
-        // Caso 1: a própria URL termina em .m3u8 ou .mp4
         if (u.pathname.match(/\.(m3u8|mp4)$/i)) {
             return { url: src, quality: 'HD' };
         }
-        // Caso 2: parâmetro "id" contém o caminho do stream
         const id = u.searchParams.get('id') || '';
         if (id.match(/\.(m3u8|mp4)$/i)) {
-            // Reconstrói a URL base + o caminho do id
-            // Ex: https://topanimes.net/antivirus2/yes/ + sbt/.../cdn_stream.m3u8
             const base = u.origin + u.pathname;
             return { url: base + id, quality: 'HD' };
         }
-        // Caso 3: a URL já é .mp4 direto (como sk-ru.alibabacdn.net)
-        const idFull = u.searchParams.get('id') || '';
-        if (idFull.match(/\.mp4/i)) {
-            return { url: idFull.startsWith('http') ? idFull : src, quality: 'HD' };
+        if (id.match(/\.mp4/i)) {
+            return { url: id.startsWith('http') ? id : src, quality: 'HD' };
         }
     } catch (e) {}
     return null;
 }
 
-// ─── Extrator de MP4/M3U8 do player Playerjs ─────────────────────────────────
-// O player coloca as URLs diretamente no HTML:
-//   file:"[360p]https://...mp4/,[720p]https://...mp4/,[1080p]https://...mp4/"
-// Envia Referer correto para que o CDN aceite servir o vídeo.
+// Monta a URL de proxy que passa pelo NOSSO servidor, garantindo que o
+// Referer/Origin corretos sejam enviados ao CDN independente do que o
+// player (Nuvio/Stremio) suporte.
+function buildProxyUrl(selfBase, targetUrl, referer) {
+    const params = new URLSearchParams({
+        url: targetUrl,
+        ref: referer || ''
+    });
+    return `${selfBase}/proxy?${params.toString()}`;
+}
 
-async function extractMp4FromEmbed(rawEmbedUrl) {
+// ─── Extrator de MP4/M3U8 do player Playerjs ─────────────────────────────────
+
+async function extractMp4FromEmbed(rawEmbedUrl, selfBase) {
     const embedUrl = cleanEmbedUrl(rawEmbedUrl);
 
-    // Verifica se já é um stream direto antes de tentar fetch
     const direct = extractDirectStream(embedUrl);
     if (direct) {
         console.log(`[extractMp4] stream direto detectado: ${direct.url}`);
-        return [{ ...direct, behaviorHints: { notWebReady: false } }];
+        let origin = '';
+        try { origin = new URL(embedUrl).origin; } catch (e) {}
+        return [{
+            quality: direct.quality,
+            url: buildProxyUrl(selfBase, direct.url, origin + '/')
+        }];
     }
 
     const cached = cache.get(`mp4:${embedUrl}`);
-    if (cached) return cached;
+    if (cached) return cached.map(s => ({ ...s, url: buildProxyUrl(selfBase, s.rawUrl, s.referer) }));
 
     let origin;
     try { origin = new URL(embedUrl).origin; } catch (e) { origin = ''; }
@@ -121,45 +130,32 @@ async function extractMp4FromEmbed(rawEmbedUrl) {
         }
 
         const fileStr = fileMatch[1];
-        const streams = [];
+        const rawStreams = [];
 
-        // Formato: [qualidade]url,...
         const qualityRegex = /\[([^\]]+)\](https?:\/\/[^,\s"']+)/g;
         let match;
         while ((match = qualityRegex.exec(fileStr)) !== null) {
-            streams.push({
-                quality: match[1],
-                url: match[2],
-                // Passa Referer do embed para o CDN aceitar a requisição do Stremio
-                behaviorHints: {
-                    notWebReady: false,
-                    proxyHeaders: {
-                        request: { 'Referer': origin + '/', 'Origin': origin }
-                    }
-                }
-            });
+            rawStreams.push({ quality: match[1], rawUrl: match[2], referer: origin + '/' });
         }
 
-        // Fallback: URLs soltas
-        if (streams.length === 0) {
+        if (rawStreams.length === 0) {
             const urlRegex = /(https?:\/\/[^\s,"']+\.(mp4|m3u8)[^\s,"']*)/g;
             while ((match = urlRegex.exec(fileStr)) !== null) {
-                streams.push({
-                    quality: 'SD',
-                    url: match[1],
-                    behaviorHints: { notWebReady: false, proxyHeaders: { request: { 'Referer': origin + '/' } } }
-                });
+                rawStreams.push({ quality: 'SD', rawUrl: match[1], referer: origin + '/' });
             }
         }
 
-        if (streams.length > 0) {
-            console.log(`[extractMp4] ${streams.length} qualidade(s) de ${embedUrl}`);
-            cache.set(`mp4:${embedUrl}`, streams);
+        if (rawStreams.length > 0) {
+            console.log(`[extractMp4] ${rawStreams.length} qualidade(s) de ${embedUrl}`);
+            cache.set(`mp4:${embedUrl}`, rawStreams);
         } else {
             console.error(`[extractMp4] nenhuma URL de vídeo em ${embedUrl}`);
         }
 
-        return streams;
+        return rawStreams.map(s => ({
+            quality: s.quality,
+            url: buildProxyUrl(selfBase, s.rawUrl, s.referer)
+        }));
 
     } catch (e) {
         console.error(`[extractMp4] erro em ${embedUrl}:`, e.message);
@@ -169,8 +165,8 @@ async function extractMp4FromEmbed(rawEmbedUrl) {
 
 // ─── Scraper: TopAnimes.net ───────────────────────────────────────────────────
 
-async function scrapeTopAnimes(name, ep) {
-    const cacheKey = `top:${name}:${ep}`;
+async function scrapeTopAnimes(name, ep, selfBase) {
+    const cacheKey = `top:${name}:${ep}:${selfBase}`;
     const cached = cache.get(cacheKey);
     if (cached) return cached;
 
@@ -211,7 +207,6 @@ async function scrapeTopAnimes(name, ep) {
             let src = $ep(el).attr('src') || $ep(el).attr('data-src');
             if (!src || !src.startsWith('http')) return;
 
-            // Desembrulha /aviso/?url=...
             if (src.includes('/aviso/?url=')) {
                 try {
                     const u = new URL(src, 'https://topanimes.net');
@@ -222,7 +217,7 @@ async function scrapeTopAnimes(name, ep) {
             const junk = ['disqus', 'facebook.com', 'twitter', 'doubleclick', 'googlesyndication', 'gstatic', 'youtube.com/sub'];
             if (junk.some(j => src.includes(j))) return;
 
-            iframeSrcs.push(src); // guarda a URL original, cleanEmbedUrl é feito dentro do extrator
+            iframeSrcs.push(src);
         });
 
         const uniqueSrcs = [...new Set(iframeSrcs)];
@@ -236,12 +231,11 @@ async function scrapeTopAnimes(name, ep) {
 
         const streams = [];
         for (const src of uniqueSrcs) {
-            const mp4s = await extractMp4FromEmbed(src);
+            const mp4s = await extractMp4FromEmbed(src, selfBase);
             for (const item of mp4s) {
                 streams.push({
                     title: `TopAnimes - ${item.quality}`,
-                    url: item.url,
-                    behaviorHints: item.behaviorHints
+                    url: item.url
                 });
             }
             if (mp4s.length === 0) {
@@ -265,7 +259,7 @@ async function scrapeTopAnimes(name, ep) {
 
 // ─── Handler principal ────────────────────────────────────────────────────────
 
-builder.defineStreamHandler(async ({ type, id }) => {
+builder.defineStreamHandler(async ({ type, id }, req) => {
     if (!id.startsWith("kitsu:") && !id.startsWith("tt")) return { streams: [] };
 
     let name = "";
@@ -290,11 +284,14 @@ builder.defineStreamHandler(async ({ type, id }) => {
 
     console.log(`[handler] buscando: "${name}" ep ${ep}`);
 
+    // Determina a base URL pública para montar os links de proxy
+    const selfBase = process.env.PUBLIC_URL || 'https://parzival-anime-br.vercel.app';
+
     const withFallback = (p) => p.catch(() => []);
     const timeoutGuard = new Promise(resolve => setTimeout(() => resolve('TIMEOUT'), 25000));
 
     const results = await Promise.race([
-        Promise.all([withFallback(scrapeTopAnimes(name, ep))]),
+        Promise.all([withFallback(scrapeTopAnimes(name, ep, selfBase))]),
         timeoutGuard
     ]);
 
@@ -311,6 +308,58 @@ builder.defineStreamHandler(async ({ type, id }) => {
 // ─── Servidor ─────────────────────────────────────────────────────────────────
 
 const app = express();
+
+// Endpoint de proxy: busca o vídeo no CDN de origem com o Referer/Origin
+// corretos e repassa os bytes para o player (suporta Range para seek).
+app.get('/proxy', async (req, res) => {
+    const targetUrl = req.query.url;
+    const referer = req.query.ref || '';
+
+    if (!targetUrl) {
+        return res.status(400).send('Missing url parameter');
+    }
+
+    try {
+        const headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        };
+        if (referer) {
+            headers['Referer'] = referer;
+            try { headers['Origin'] = new URL(referer).origin; } catch (e) {}
+        }
+        // Repassa o Range header do player para permitir seek/skip
+        if (req.headers.range) {
+            headers['Range'] = req.headers.range;
+        }
+
+        const upstream = await axios.get(targetUrl, {
+            headers,
+            responseType: 'stream',
+            timeout: 20000,
+            validateStatus: () => true // repassamos o status como veio
+        });
+
+        // Repassa os headers relevantes de volta ao player
+        const passHeaders = ['content-type', 'content-length', 'content-range', 'accept-ranges'];
+        passHeaders.forEach(h => {
+            if (upstream.headers[h]) res.setHeader(h, upstream.headers[h]);
+        });
+        res.status(upstream.status);
+
+        upstream.data.pipe(res);
+
+        upstream.data.on('error', (err) => {
+            console.error('[proxy] erro no stream upstream:', err.message);
+            if (!res.headersSent) res.status(502).end();
+            else res.end();
+        });
+
+    } catch (e) {
+        console.error(`[proxy] erro ao buscar ${targetUrl}:`, e.message);
+        if (!res.headersSent) res.status(502).send('Erro ao buscar o vídeo de origem');
+    }
+});
+
 app.use(getRouter(builder.getInterface()));
 
 if (process.env.VERCEL) {
