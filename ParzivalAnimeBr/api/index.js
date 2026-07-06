@@ -77,34 +77,39 @@ async function buscarStreams(name, ep) {
 }
 
 builder.defineStreamHandler(async ({ type, id }) => {
-    console.log("Request recebida para ID:", id);
+    console.log("Request recebida. ID completo:", id);
     if (!id.startsWith("kitsu:") && !id.startsWith("tt")) return { streams: [] };
-    if (cache.has(id)) return { streams: cache.get(id) };
-
+    
     let animeName = "";
     let episode = "1";
 
     try {
         if (id.startsWith("kitsu:")) {
-            const [_, kitsuId, season, ep] = id.split(":");
-            episode = ep || "1";
+            const parts = id.split(":");
+            const kitsuId = parts[1];
+            episode = parts[3] || "1";
             const res = await axios.get(`https://kitsu.io/api/edge/anime/${kitsuId}`, { headers });
             animeName = res.data.data.attributes.canonicalTitle;
+            console.log(`[DEBUG] Anime Kitsu identificado: ${animeName}`);
         } else {
-            const [ttId, season, ep] = id.split(":");
-            episode = ep || "1";
+            const parts = id.split(":");
+            const ttId = parts[0];
+            episode = parts[2] || "1";
             const res = await axios.get(`https://v3-cinemeta.strem.io/meta/${type}/${ttId}.json`, { headers });
             animeName = res.data.meta.name;
+            console.log(`[DEBUG] Anime IMDb identificado: ${animeName}`);
         }
-    } catch (e) { return { streams: [] }; }
+    } catch (e) { 
+        console.error("Erro na tradução do nome:", e.message);
+        return { streams: [] }; 
+    }
 
-    const streams = await buscarStreams(animeName, episode);
-    if (streams.length > 0) cache.set(id, streams);
+    // AQUI ESTÁ O PULO DO GATO: Se o nome for muito complexo, vamos simplificar para a busca
+    const nomeSimplificado = animeName.replace(/[:!?]/g, ""); 
+    console.log(`[DEBUG] Buscando por: ${nomeSimplificado} EP ${episode}`);
+
+    const streams = await buscarStreams(nomeSimplificado, episode);
     
-    console.log(`[Finalizado] Retornando ${streams.length} streams para ${animeName}`);
+    console.log(`[Finalizado] Encontrados ${streams.length} streams para ${nomeSimplificado}`);
     return { streams };
 });
-
-const app = express();
-app.use(getRouter(builder.getInterface()));
-module.exports = app;
