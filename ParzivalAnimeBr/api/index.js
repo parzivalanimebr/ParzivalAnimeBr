@@ -8,7 +8,7 @@ const cache = new NodeCache({ stdTTL: 3600 });
 
 const manifest = {
     id: "org.parzivalanimebr",
-    version: "1.1.2",
+    version: "1.2.0",
     name: "ParzivalAnimeBr",
     description: "Busca animes otimizada.",
     resources: ["stream"],
@@ -86,41 +86,31 @@ function resolvePlayerJsSources(html) {
     return qualities;
 }
 
+// URL base do proprio deployment (a Vercel injeta isso automaticamente).
+// Usada pra montar links que passam pelo NOSSO proxy de video.
+const BASE_URL = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
+
 // Tenta resolver um link de embed (iframe) para arquivo de video direto.
-// Se conseguir, retorna streams "nativos" (tocam dentro do proprio app).
-// Se nao conseguir, cai pro externalUrl (abre no navegador) como ultimo recurso.
+// Se conseguir, retorna streams "nativos" que passam pelo NOSSO proxy
+// (/proxy/stream), que busca o video no CDN com o Referer certo e repassa os
+// bytes pro player. Isso evita depender do player suportar headers
+// customizados (proxyHeaders nao e respeitado por todo cliente Stremio).
+// Se nao conseguir extrair o link direto, cai pro externalUrl (abre no
+// navegador) como ultimo recurso.
 async function resolveEmbedToStreams(sourceName, index, embedUrl, originSiteUrl) {
     try {
         const html = await fetchViaProxy(embedUrl, 6000);
         const sources = resolvePlayerJsSources(html);
         if (sources.length > 0) {
             const embedOrigin = new URL(embedUrl).origin;
-            const siteOrigin = originSiteUrl ? new URL(originSiteUrl).origin : null;
-            const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
-
-            // Nao sabemos com certeza qual Referer o CDN exige (o do embed ou
-            // o do site original), entao geramos as duas variantes pra testar.
-            const referers = [{ label: 'embed', value: `${embedOrigin}/` }];
-            if (siteOrigin && siteOrigin !== embedOrigin) {
-                referers.push({ label: 'site', value: `${siteOrigin}/` });
-            }
-
-            const streams = [];
-            for (const s of sources) {
-                for (const ref of referers) {
-                    streams.push({
-                        title: `${sourceName} - ${s.quality} (ref:${ref.label})`,
-                        url: s.url,
-                        behaviorHints: {
-                            notWebReady: true,
-                            proxyHeaders: {
-                                request: { 'Referer': ref.value, 'User-Agent': UA }
-                            }
-                        }
-                    });
-                }
-            }
-            return streams;
+            return sources.map(s => {
+                const proxied = `${BASE_URL}/proxy/stream?url=${encodeURIComponent(s.url)}&referer=${encodeURIComponent(embedOrigin + '/')}`;
+                return {
+                    title: `${sourceName} - ${s.quality}`,
+                    url: proxied
+                };
+            });
         }
     } catch (e) {
         console.error(`[resolveEmbedToStreams] falhou em ${embedUrl}:`, e.message);
@@ -339,5 +329,42 @@ builder.defineStreamHandler(async ({ type, id }) => {
 });
 
 const app = express();
+
+// Repassa o video do CDN pro player, com o Referer/User-Agent corretos,
+// sem depender do cliente Stremio suportar headers customizados.
+// Suporta Range (necessario pra avançar/voltar no video).
+app.get('/proxy/stream', async (req, res) => {
+    const { url, referer } = req.query;
+    if (!url) return res.status(400).send('missing url');
+
+    try {
+        const upstream = await axios.get(url, {
+            responseType: 'stream',
+            timeout: 15000,
+            headers: {
+                'User-Agent': UA,
+                'Referer': referer || '',
+                ...(req.headers.range ? { Range: req.headers.range } : {})
+            },
+            validateStatus: () => true
+        });
+
+        res.status(upstream.status);
+        ['content-type', 'content-length', 'content-range', 'accept-ranges'].forEach(h => {
+            if (upstream.headers[h]) res.setHeader(h, upstream.headers[h]);
+        });
+        if (!upstream.headers['accept-ranges']) res.setHeader('Accept-Ranges', 'bytes');
+
+        upstream.data.pipe(res);
+        upstream.data.on('error', (err) => {
+            console.error('[proxy/stream] erro no stream upstream:', err.message);
+            res.end();
+        });
+    } catch (e) {
+        console.error('[proxy/stream] erro:', e.message);
+        res.status(502).send('proxy error');
+    }
+});
+
 app.use(getRouter(builder.getInterface()));
 module.exports = app;
