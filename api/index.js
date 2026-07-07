@@ -8,7 +8,7 @@ const cache = new NodeCache({ stdTTL: 3600 });
 
 const manifest = {
     id: "org.parzivalanimebr",
-    version: "1.3.0",
+    version: "1.3.1",
     name: "ParzivalAnimeBr",
     description: "Busca animes otimizada.",
     resources: ["stream"],
@@ -86,12 +86,22 @@ function resolvePlayerJsSources(html) {
     return qualities;
 }
 
-// URL base do proprio deployment, usada pra montar links que passam pelo
-// NOSSO proxy de video. A Vercel injeta VERCEL_URL e o Render injeta
-// RENDER_EXTERNAL_URL automaticamente - nao precisa configurar nada.
-const BASE_URL = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : (process.env.RENDER_EXTERNAL_URL || `http://localhost:${process.env.PORT || 3000}`);
+// URL base do proprio deployment. Em vez de confiar em variaveis de ambiente
+// (que podem vir vazias dependendo da plataforma/quando o servico foi
+// criado - foi a causa de "carrega mas nao acha nada" nunca aparecer no
+// log, porque o link gerado caia pra localhost e o player nem conseguia
+// chegar no servidor), pegamos o host da PROPRIA requisicao que chega.
+const { AsyncLocalStorage } = require('async_hooks');
+const requestContext = new AsyncLocalStorage();
+
+function getBaseUrl() {
+    const store = requestContext.getStore();
+    if (store && store.baseUrl) return store.baseUrl;
+    // fallback, so deve ser usado se algo chamar isso fora de uma requisicao HTTP
+    return process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : (process.env.RENDER_EXTERNAL_URL || `http://localhost:${process.env.PORT || 3000}`);
+}
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
 
 // Tenta resolver um link de embed (iframe) para arquivo de video direto.
@@ -108,7 +118,7 @@ async function resolveEmbedToStreams(sourceName, index, embedUrl, originSiteUrl)
         if (sources.length > 0) {
             const embedOrigin = new URL(embedUrl).origin;
             return sources.map(s => {
-                const proxied = `${BASE_URL}/proxy/stream?url=${encodeURIComponent(s.url)}&referer=${encodeURIComponent(embedOrigin + '/')}`;
+                const proxied = `${getBaseUrl()}/proxy/stream?url=${encodeURIComponent(s.url)}&referer=${encodeURIComponent(embedOrigin + '/')}`;
                 return {
                     title: `${sourceName} - ${s.quality}`,
                     url: proxied
@@ -332,6 +342,15 @@ builder.defineStreamHandler(async ({ type, id }) => {
 });
 
 const app = express();
+
+// Captura o host real de cada requisicao (funciona atras de qualquer proxy/
+// plataforma, sem depender de variavel de ambiente) e deixa disponivel pra
+// quem estiver montando URLs durante essa requisicao (ex: getBaseUrl()).
+app.use((req, res, next) => {
+    const proto = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+    const host = req.get('host');
+    requestContext.run({ baseUrl: `${proto}://${host}` }, next);
+});
 
 // Repassa o video do CDN pro player, com o Referer/User-Agent corretos,
 // sem depender do cliente Stremio suportar headers customizados.
