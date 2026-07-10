@@ -696,7 +696,9 @@
                          "description":  "Cinevibe (Movies)",
                          "version":  "1.0.0",
                          "author":  "Nuvio Team",
-                         "supportedTypes":  "movie",
+                         "supportedTypes":  [
+                                                "movie"
+                                            ],
                          "filename":  "providers/cinevibe.js",
                          "enabled":  true,
                          "formats":  [
@@ -997,7 +999,9 @@
                          "description":  "Movies via GoatAPI, indexed by TMDB",
                          "version":  "1.0.0",
                          "author":  "Aeyshx",
-                         "supportedTypes":  "movie",
+                         "supportedTypes":  [
+                                                "movie"
+                                            ],
                          "filename":  "providers/goatapi.js",
                          "enabled":  true,
                          "formats":  [
@@ -1270,7 +1274,9 @@
                          "description":  "MalluMV direct links with support for Tamil, Telugu, Hindi, Malayalam, and Kannada movies",
                          "version":  "1.0.1",
                          "author":  "Nuvio Team",
-                         "supportedTypes":  "movie",
+                         "supportedTypes":  [
+                                                "movie"
+                                            ],
                          "filename":  "providers/mallumv.js",
                          "enabled":  true,
                          "formats":  [
@@ -1393,7 +1399,9 @@
                          "description":  "Hollywood, Bollywood movies including web series, \u0026 Hindi dubbed movies in HD quality",
                          "version":  "1.0.2",
                          "author":  "Nuvio Team",
-                         "supportedTypes":  "movie",
+                         "supportedTypes":  [
+                                                "movie"
+                                            ],
                          "filename":  "providers/movies4u.js",
                          "enabled":  true,
                          "formats":  [
@@ -1452,7 +1460,9 @@
                          "description":  "Hollywood \u0026 Bollywood Movies in Multi Language",
                          "version":  "1.0.0",
                          "author":  "piratezoro9",
-                         "supportedTypes":  "movie",
+                         "supportedTypes":  [
+                                                "movie"
+                                            ],
                          "filename":  "providers/movieshunt.js",
                          "enabled":  true,
                          "formats":  [
@@ -1597,7 +1607,9 @@
                          "description":  "CDN brasileiro de animes",
                          "version":  "2.0.0",
                          "author":  "lawlietbr",
-                         "supportedTypes":  "tv",
+                         "supportedTypes":  [
+                                                "tv"
+                                            ],
                          "filename":  "providers/mywallpaper.js",
                          "enabled":  true,
                          "formats":  [
