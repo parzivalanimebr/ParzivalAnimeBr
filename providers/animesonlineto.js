@@ -191,4 +191,4 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     }
 }
 
-export { getStreams };
+module.exports = { getStreams };
