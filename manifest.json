@@ -101,7 +101,9 @@
                                             ],
                          "filename":  "providers/allmovieland.js",
                          "enabled":  true,
-                         "formats":  "m3u8",
+                         "formats":  [
+                                         "m3u8"
+                                     ],
                          "contentLanguage":  [
                                                  "en",
                                                  "hi",
@@ -224,7 +226,9 @@
                                             ],
                          "filename":  "providers/anikototv.js",
                          "enabled":  true,
-                         "formats":  "mp4",
+                         "formats":  [
+                                         "mp4"
+                                     ],
                          "contentLanguage":  [
                                                  "en",
                                                  "ja"
@@ -434,7 +438,9 @@
                                             ],
                          "filename":  "providers/animesonlineto.js",
                          "enabled":  true,
-                         "formats":  "mp4",
+                         "formats":  [
+                                         "mp4"
+                                     ],
                          "contentLanguage":  [
                                                  "pt-br"
                                              ],
@@ -461,7 +467,9 @@
                                             ],
                          "filename":  "providers/animetsu.js",
                          "enabled":  true,
-                         "formats":  "m3u8",
+                         "formats":  [
+                                         "m3u8"
+                                     ],
                          "contentLanguage":  [
                                                  "en",
                                                  "ja"
@@ -488,7 +496,9 @@
                                             ],
                          "filename":  "providers/animeworld.js",
                          "enabled":  true,
-                         "formats":  "m3u8",
+                         "formats":  [
+                                         "m3u8"
+                                     ],
                          "contentLanguage":  [
                                                  "hi",
                                                  "en",
@@ -516,7 +526,9 @@
                                             ],
                          "filename":  "providers/anizone.js",
                          "enabled":  true,
-                         "formats":  "m3u8",
+                         "formats":  [
+                                         "m3u8"
+                                     ],
                          "contentLanguage":  [
                                                  "en"
                                              ],
@@ -571,7 +583,9 @@
                                             ],
                          "filename":  "providers/Cineby.js",
                          "enabled":  true,
-                         "formats":  "m3u8",
+                         "formats":  [
+                                         "m3u8"
+                                     ],
                          "contentLanguage":  [
                                                  "ar",
                                                  "en"
@@ -869,7 +883,9 @@
                                             ],
                          "filename":  "providers/dvdplay.js",
                          "enabled":  true,
-                         "formats":  "mkv",
+                         "formats":  [
+                                         "mkv"
+                                     ],
                          "contentLanguage":  [
                                                  "mal",
                                                  "tam",
@@ -959,7 +975,9 @@
                                             ],
                          "filename":  "providers/fshd.js",
                          "enabled":  true,
-                         "formats":  "m3u8",
+                         "formats":  [
+                                         "m3u8"
+                                     ],
                          "contentLanguage":  [
                                                  "pt"
                                              ],
@@ -1073,7 +1091,9 @@
                                             ],
                          "filename":  "providers/hianime.js",
                          "enabled":  true,
-                         "formats":  "m3u8",
+                         "formats":  [
+                                         "m3u8"
+                                     ],
                          "contentLanguage":  [
                                                  "ja",
                                                  "en"
@@ -1228,7 +1248,9 @@
                                             ],
                          "filename":  "providers/lordflix.js",
                          "enabled":  true,
-                         "formats":  "m3u8",
+                         "formats":  [
+                                         "m3u8"
+                                     ],
                          "contentLanguage":  [
                                                  "en"
                                              ],
@@ -1284,7 +1306,9 @@
                                             ],
                          "filename":  "providers/megaembed.js",
                          "enabled":  true,
-                         "formats":  "m3u8",
+                         "formats":  [
+                                         "m3u8"
+                                     ],
                          "contentLanguage":  [
                                                  "pt"
                                              ],
@@ -1431,7 +1455,9 @@
                          "supportedTypes":  "movie",
                          "filename":  "providers/movieshunt.js",
                          "enabled":  true,
-                         "formats":  "m3u8",
+                         "formats":  [
+                                         "m3u8"
+                                     ],
                          "contentLanguage":  [
                                                  "hi",
                                                  "en"
@@ -1759,7 +1785,9 @@
                                             ],
                          "filename":  "providers/peachify.js",
                          "enabled":  true,
-                         "formats":  "m3u8",
+                         "formats":  [
+                                         "m3u8"
+                                     ],
                          "contentLanguage":  [
                                                  "pt"
                                              ],
@@ -1876,7 +1904,9 @@
                                             ],
                          "filename":  "providers/redeflix.js",
                          "enabled":  true,
-                         "formats":  "m3u8",
+                         "formats":  [
+                                         "m3u8"
+                                     ],
                          "contentLanguage":  [
                                                  "pt"
                                              ],
@@ -1966,7 +1996,9 @@
                                             ],
                          "filename":  "providers/streamflix.js",
                          "enabled":  true,
-                         "formats":  "mkv",
+                         "formats":  [
+                                         "mkv"
+                                     ],
                          "contentLanguage":  [
                                                  "en",
                                                  "hin"
@@ -2289,7 +2321,9 @@
                                             ],
                          "filename":  "providers/vidnest-anime.js",
                          "enabled":  true,
-                         "formats":  "m3u8",
+                         "formats":  [
+                                         "m3u8"
+                                     ],
                          "contentLanguage":  [
                                                  "en",
                                                  "hi",
