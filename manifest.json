@@ -17,12 +17,8 @@
                          "logo":  "",
                          "limited":  false,
                          "supportsExternalPlayer":  false,
-                         "disabledPlatforms":  {
-
-                                               },
-                         "tags":  {
-
-                                  }
+                         "disabledPlatforms": [],
+                         "tags": []
                      },
                      {
                          "id":  "megaembed",
@@ -41,12 +37,8 @@
                          "logo":  "",
                          "limited":  false,
                          "supportsExternalPlayer":  false,
-                         "disabledPlatforms":  {
-
-                                               },
-                         "tags":  {
-
-                                  }
+                         "disabledPlatforms": [],
+                         "tags": []
                      },
                      {
                          "id":  "peachify",
@@ -65,12 +57,8 @@
                          "logo":  "",
                          "limited":  false,
                          "supportsExternalPlayer":  false,
-                         "disabledPlatforms":  {
-
-                                               },
-                         "tags":  {
-
-                                  }
+                         "disabledPlatforms": [],
+                         "tags": []
                      },
                      {
                          "id":  "redeflix",
@@ -89,12 +77,8 @@
                          "logo":  "",
                          "limited":  false,
                          "supportsExternalPlayer":  false,
-                         "disabledPlatforms":  {
-
-                                               },
-                         "tags":  {
-
-                                  }
+                         "disabledPlatforms": [],
+                         "tags": []
                      },
                      {
                          "id":  "pomfy",
@@ -116,9 +100,7 @@
                          "logo":  "https://pomfy.online/pomfylogofullcolor.png",
                          "limited":  false,
                          "supportsExternalPlayer":  true,
-                         "disabledPlatforms":  {
-
-                                               },
+                         "disabledPlatforms": [],
                          "tags":  [
                                       "filmes",
                                       "s+�ries"
@@ -143,9 +125,7 @@
                          "logo":  "https://image2url.com/r2/default/images/1773218651086-4a0ea24e-6e2b-4a22-ab18-8cb28d1b6f23.png",
                          "limited":  false,
                          "supportsExternalPlayer":  true,
-                         "disabledPlatforms":  {
-
-                                               },
+                         "disabledPlatforms": [],
 "tags": ["anime"]
                      },
                      {
@@ -168,9 +148,7 @@
                          "logo":  "https://www.doramogo.net/assets/doramogo/images/apple-touch-icon.webp?version=200.50.10",
                          "limited":  false,
                          "supportsExternalPlayer":  true,
-                         "disabledPlatforms":  {
-
-                                               },
+                         "disabledPlatforms": [],
                          "tags":  [
                                       "dorama",
                                       "animes",
@@ -200,9 +178,7 @@
                          "logo":  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzFhMWExYSIgcng9IjEwIiByeT0iMTAiIC8+CiAgPHRleHQgeD0iNTAiIHk9IjY1IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNDAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjZmZmZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5NQjwvdGV4dD4KPC9zdmc+",
                          "limited":  false,
                          "supportsExternalPlayer":  true,
-                         "disabledPlatforms":  {
-
-                                               },
+                         "disabledPlatforms": [],
                          "tags":  [
                                       "player",
                                       "embed"
@@ -227,9 +203,7 @@
                          "logo":  "",
                          "limited":  false,
                          "supportsExternalPlayer":  true,
-                         "disabledPlatforms":  {
-
-                                               },
+                         "disabledPlatforms": [],
 "tags": ["anime"]
                      },
                      {
@@ -255,9 +229,7 @@
                          "logo":  "",
                          "limited":  false,
                          "supportsExternalPlayer":  true,
-                         "disabledPlatforms":  {
-
-                                               },
+                         "disabledPlatforms": [],
                          "tags":  [
                                       "filmes",
                                       "s+�ries",
@@ -287,9 +259,7 @@
                          "logo":  "",
                          "limited":  false,
                          "supportsExternalPlayer":  true,
-                         "disabledPlatforms":  {
-
-                                               },
+                         "disabledPlatforms": [],
                          "tags":  ["animes"]
                      },
                      {
@@ -315,9 +285,7 @@
                          "logo":  "",
                          "limited":  false,
                          "supportsExternalPlayer":  true,
-                         "disabledPlatforms":  {
-
-                                               },
+                         "disabledPlatforms": [],
                          "tags":  ["animes"]
                      },
                      {
@@ -343,9 +311,7 @@
                          "logo":  "",
                          "limited":  false,
                          "supportsExternalPlayer":  true,
-                         "disabledPlatforms":  {
-
-                                               },
+                         "disabledPlatforms": [],
                          "tags":  ["animes"]
                      },
                      {
@@ -372,9 +338,7 @@
                          "logo":  "",
                          "limited":  false,
                          "supportsExternalPlayer":  true,
-                         "disabledPlatforms":  {
-
-                                               },
+                         "disabledPlatforms": [],
                          "tags":  [
                                       "filmes",
                                       "s+�ries",
@@ -385,4 +349,5 @@
     "name":  "Nuvio PT-BR",
     "version":  "2.0.0"
 }
+
 
