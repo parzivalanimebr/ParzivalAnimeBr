@@ -1,224 +1,2492 @@
 {
-  "name": "Nuvio PT-BR Combined",
-  "version": "1.0.0",
-  "scrapers": [
-    {
-      "id": "fshd",
-      "name": "FSHD",
-      "description": "FSHD - API | 1080p",
-      "version": "1.0.0",
-      "author": "saimuel",
-      "supportedTypes": ["movie", "tv"],
-      "filename": "providers/fshd.js",
-      "enabled": true,
-      "formats": ["m3u8"],
-      "contentLanguage": ["pt"]
-    },
-    {
-      "id": "megaembed",
-      "name": "MegaEmbed",
-      "description": "MegaEmbed - API| 1080p/720p",
-      "version": "1.0.0",
-      "author": "saimuel",
-      "supportedTypes": ["movie", "tv"],
-      "filename": "providers/megaembed.js",
-      "enabled": true,
-      "formats": ["m3u8"],
-      "contentLanguage": ["pt"]
-    },
-    {
-      "id": "peachify",
-      "name": "Peachify",
-      "description": "Peachify - API | 1080p",
-      "version": "1.0.0",
-      "author": "saimuel",
-      "supportedTypes": ["movie", "tv"],
-      "filename": "providers/peachify.js",
-      "enabled": true,
-      "formats": ["m3u8"],
-      "contentLanguage": ["pt"]
-    },
-    {
-      "id": "redeflix",
-      "name": "RedeFlix",
-      "description": "RedeFlix - API | 1080p",
-      "version": "1.0.0",
-      "author": "saimuel",
-      "supportedTypes": ["movie", "tv"],
-      "filename": "providers/redeflix.js",
-      "enabled": true,
-      "formats": ["m3u8"],
-      "contentLanguage": ["pt"]
-    },
-    {
-      "id": "pomfy",
-      "name": "Pomfy",
-      "description": "Filmes e séries em 1080p via Pomfy API",
-      "version": "1.0.0",
-      "author": "lawlietbr, saimuelbr",
-      "supportedTypes": ["tv", "movie"],
-      "filename": "providers/pomfy.js",
-      "enabled": true,
-      "logo": "https://pomfy.online/pomfylogofullcolor.png",
-      "contentLanguage": ["pt-br"],
-      "formats": ["hls", "m3u8"],
-      "limited": false,
-      "disabledPlatforms": [],
-      "supportsExternalPlayer": true,
-      "tags": ["filmes", "séries"]
-    },
-    {
-      "id": "mywallpaper",
-      "name": "My Wallpaper",
-      "description": "CDN brasileiro de animes",
-      "version": "2.0.0",
-      "author": "lawlietbr",
-      "supportedTypes": ["tv"],
-      "filename": "providers/mywallpaper.js",
-      "enabled": true,
-      "logo": "https://image2url.com/r2/default/images/1773218651086-4a0ea24e-6e2b-4a22-ab18-8cb28d1b6f23.png",
-      "contentLanguage": ["pt-br"],
-      "formats": ["hls", "m3u8"],
-      "limited": false,
-      "disabledPlatforms": [],
-      "supportsExternalPlayer": true,
-      "tags": ["anime"]
-    },
-    {
-      "id": "doramogo",
-      "name": "Doramogo",
-      "description": "Diversidade de conteúdos em 1080p",
-      "version": "2.0.0",
-      "author": "lawlietbr",
-      "supportedTypes": ["tv", "movie"],
-      "filename": "providers/doramogo.js",
-      "enabled": true,
-      "logo": "https://www.doramogo.net/assets/doramogo/images/apple-touch-icon.webp?version=200.50.10",
-      "contentLanguage": ["pt-br"],
-      "formats": ["hls", "m3u8"],
-      "limited": false,
-      "disabledPlatforms": [],
-      "supportsExternalPlayer": true,
-      "tags": ["dorama", "animes", "series", "filmes", "legendado", "dublado"]
-    },
-    {
-      "id": "myembed",
-      "name": "MyEmbed",
-      "description": "API de filmes e séries",
-      "version": "1.0.0",
-      "author": "lawlietbr",
-      "supportedTypes": ["tv", "movie"],
-      "filename": "providers/myembed.js",
-      "enabled": true,
-      "logo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzFhMWExYSIgcng9IjEwIiByeT0iMTAiIC8+CiAgPHRleHQgeD0iNTAiIHk9IjY1IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNDAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjZmZmZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5NQjwvdGV4dD4KPC9zdmc+",
-      "contentLanguage": ["pt-br"],
-      "formats": ["hls", "m3u8"],
-      "limited": false,
-      "disabledPlatforms": [],
-      "supportsExternalPlayer": true,
-      "tags": ["player", "embed"]
-    },
-    {
-      "id": "animesonlineto",
-      "name": "AnimesOnlineTo",
-      "description": "Animes em PT-BR via AnimesOnlineTo",
-      "version": "1.0.0",
-      "author": "AlvitoSR",
-      "supportedTypes": ["movie", "tv", "series", "anime"],
-      "filename": "providers/animesonlineto.js",
-      "enabled": true,
-      "logo": "",
-      "contentLanguage": ["pt-br"],
-      "formats": ["mp4"],
-      "limited": false,
-      "disabledPlatforms": [],
-      "supportsExternalPlayer": true,
-      "tags": ["anime"]
-    },
-    {
-      "id": "saimo-tv",
-      "name": "Saimo TV",
-      "description": "Filmes e séries via Saimo TV",
-      "version": "1.0.0",
-      "author": "AlvitoSR",
-      "supportedTypes": ["movie", "tv", "series", "anime"],
-      "filename": "providers/saimo-tv.js",
-      "enabled": true,
-      "logo": "",
-      "contentLanguage": ["pt-br"],
-      "formats": ["hls", "m3u8", "mp4"],
-      "limited": false,
-      "disabledPlatforms": [],
-      "supportsExternalPlayer": true,
-      "tags": ["filmes", "séries", "animes"]
-    },
-    {
-      "id": "animefire",
-      "name": "AnimeFire",
-      "description": "Animes PT-BR leg/dub | 1080p/720p",
-      "version": "1.2.0",
-      "author": "AlvitoSR",
-      "supportedTypes": ["movie", "tv", "series", "anime"],
-      "filename": "providers/animefire.js",
-      "enabled": true,
-      "logo": "",
-      "contentLanguage": ["pt-br"],
-      "formats": ["hls", "m3u8", "mp4"],
-      "limited": false,
-      "disabledPlatforms": [],
-      "supportsExternalPlayer": true,
-      "tags": ["animes"]
-    },
-    {
-      "id": "anibunker",
-      "name": "AniBunker",
-      "description": "Animes PT-BR leg/dub | 1080p/720p",
-      "version": "1.0.0",
-      "author": "AlvitoSR",
-      "supportedTypes": ["movie", "tv", "series", "anime"],
-      "filename": "providers/anibunker.js",
-      "enabled": true,
-      "logo": "",
-      "contentLanguage": ["pt-br"],
-      "formats": ["hls", "m3u8", "mp4"],
-      "limited": false,
-      "disabledPlatforms": [],
-      "supportsExternalPlayer": true,
-      "tags": ["animes"]
-    },
-    {
-      "id": "tomato",
-      "name": "Tomato",
-      "description": "Tomato API PT-BR leg/dub | 1080p/720p",
-      "version": "1.0.0",
-      "author": "AlvitoSR",
-      "supportedTypes": ["movie", "tv", "series", "anime"],
-      "filename": "providers/tomato.js",
-      "enabled": true,
-      "logo": "",
-      "contentLanguage": ["pt-br"],
-      "formats": ["hls", "m3u8", "mp4"],
-      "limited": false,
-      "disabledPlatforms": [],
-      "supportsExternalPlayer": true,
-      "tags": ["animes"]
-    },
-    {
-      "id": "iptv-m3u",
-      "name": "IPTV M3U",
-      "description": "Filmes e séries via listas M3U (IPTV Brasil)",
-      "version": "1.0.0",
-      "author": "AlvitoSR",
-      "supportedTypes": ["movie", "tv", "series", "anime"],
-      "filename": "providers/iptv-m3u.js",
-      "enabled": true,
-      "logo": "",
-      "contentLanguage": ["pt-br"],
-      "formats": ["mp4", "hls", "m3u8", "ts"],
-      "limited": false,
-      "disabledPlatforms": [],
-      "supportsExternalPlayer": true,
-      "tags": ["filmes", "séries", "iptv"]
-    }
-  ]
+    "scrapers":  [
+                     {
+                         "id":  "4khdhub",
+                         "name":  "4KHDHub",
+                         "description":  "4KHDHub direct links",
+                         "version":  "1.0.1",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/4khdhub.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/DZpW6Xfb/4khdhub.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "4khdhubnew",
+                         "name":  "4KHDHub-NEW",
+                         "description":  "4KHDHub- Now fetches every movie and series",
+                         "version":  "2.0.0",
+                         "author":  "Xyr0nX",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/4khdhubnew.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/DZpW6Xfb/4khdhub.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "allanime",
+                         "name":  "AllAnime",
+                         "description":  "AllAnime - Anime and Manga content streaming",
+                         "version":  "1.0.0",
+                         "author":  "",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/allanime.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "mkv",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "ja"
+                                             ],
+                         "logo":  "https://i.postimg.cc/DwpqLJWV/allanime.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "allmovieland",
+                         "name":  "AllMovieLand",
+                         "description":  "AllMovieLand streaming provider with multi-language support",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/allmovieland.js",
+                         "enabled":  true,
+                         "formats":  "m3u8",
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "hi",
+                                                 "ta",
+                                                 "te"
+                                             ],
+                         "logo":  "https://i.postimg.cc/hhWqkVQs/allmovieland.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "allwish",
+                         "name":  "=�� All-Wish",
+                         "description":  "All-Wish TV episodes via All-Wish servers",
+                         "version":  "1.0.1",
+                         "author":  "Kabir",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/allwish.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "ja"
+                                             ],
+                         "logo":  "https://i.postimg.cc/WpFW45WQ/allwish.png",
+                         "limited":  true,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "anibunker",
+                         "name":  "AniBunker",
+                         "description":  "Animes PT-BR leg/dub | 1080p/720p",
+                         "version":  "1.0.0",
+                         "author":  "AlvitoSR",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv",
+                                                "series",
+                                                "anime"
+                                            ],
+                         "filename":  "providers/anibunker.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "hls",
+                                         "m3u8",
+                                         "mp4"
+                                     ],
+                         "contentLanguage":  [
+                                                 "pt-br"
+                                             ],
+                         "logo":  "",
+                         "limited":  false,
+                         "supportsExternalPlayer":  true,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "anidb",
+                         "name":  "AniDB",
+                         "description":  "Subbed and dubbed anime from AniDB.",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team (ChillPill)",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/anidb.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "ja",
+                                                 "ko"
+                                             ],
+                         "logo":  "https://i.postimg.cc/rmMzZ45K/anidb.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "anikototv",
+                         "name":  "AnikotoTV",
+                         "description":  "Anime provider for AnikotoTV.to via Mapper API + Native Extractor",
+                         "version":  "1.0.5",
+                         "author":  "piratezoro9",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv",
+                                                "anime"
+                                            ],
+                         "filename":  "providers/anikototv.js",
+                         "enabled":  true,
+                         "formats":  "mp4",
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "ja"
+                                             ],
+                         "logo":  "https://i.postimg.cc/JhL3HBR4/anikototv.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "animefire",
+                         "name":  "AnimeFire",
+                         "description":  "Animes PT-BR leg/dub | 1080p/720p",
+                         "version":  "1.2.0",
+                         "author":  "AlvitoSR",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv",
+                                                "series",
+                                                "anime"
+                                            ],
+                         "filename":  "providers/animefire.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "hls",
+                                         "m3u8",
+                                         "mp4"
+                                     ],
+                         "contentLanguage":  [
+                                                 "pt-br"
+                                             ],
+                         "logo":  "",
+                         "limited":  false,
+                         "supportsExternalPlayer":  true,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "animekai",
+                         "name":  "AnimeKai",
+                         "description":  "AnimeKai TV episodes via AnimeKai servers",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/animekai.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/MKJd7fy7/animekai.png",
+                         "limited":  true,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "animepahe",
+                         "name":  "AnimePahe",
+                         "description":  "Watch anime online free in HD with fast streaming servers. Stream latest anime episodes and movies daily",
+                         "version":  "1.0.1",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/animepahe.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "m3u8",
+                                         "mp4"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "ja"
+                                             ],
+                         "logo":  "https://i.postimg.cc/c4ZBGNNs/animepahe.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "animesalt",
+                         "name":  "=��� AnimeSalt",
+                         "description":  "AnimeSalt India",
+                         "version":  "1.0.0",
+                         "author":  "piratezoro9",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/animesalt.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "m3u8",
+                                         "mp4"
+                                     ],
+                         "contentLanguage":  [
+                                                 "hi",
+                                                 "en",
+                                                 "ja"
+                                             ],
+                         "logo":  "https://i.postimg.cc/1X24MYhg/animesalt.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "anime-sama",
+                         "name":  "=��� Anime-Sama",
+                         "description":  "Watch AnimeSama France",
+                         "version":  "1.1.27",
+                         "author":  "Gowaru",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/anime-sama.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "mkv"
+                                     ],
+                         "contentLanguage":  [
+                                                 "fr"
+                                             ],
+                         "logo":  "https://i.postimg.cc/tgYt2pYG/animesama.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "animesdigital",
+                         "name":  "AnimesDigital",
+                         "description":  "Watch your favorite anime in Portuguese HD",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/animesdigital.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "pt",
+                                                 "ja"
+                                             ],
+                         "logo":  "https://i.postimg.cc/vTMZgBfy/animesdigital.jpg",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "animesonlineto",
+                         "name":  "AnimesOnlineTo",
+                         "description":  "Animes em PT-BR via AnimesOnlineTo",
+                         "version":  "1.0.0",
+                         "author":  "AlvitoSR",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv",
+                                                "series",
+                                                "anime"
+                                            ],
+                         "filename":  "providers/animesonlineto.js",
+                         "enabled":  true,
+                         "formats":  "mp4",
+                         "contentLanguage":  [
+                                                 "pt-br"
+                                             ],
+                         "logo":  "",
+                         "limited":  false,
+                         "supportsExternalPlayer":  true,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "animetsu",
+                         "name":  "Animetsu",
+                         "description":  "Lightning fast sub \u0026 dub anime streams via Animetsu",
+                         "version":  "1.0.0",
+                         "author":  "piratezoro9",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv",
+                                                "anime"
+                                            ],
+                         "filename":  "providers/animetsu.js",
+                         "enabled":  true,
+                         "formats":  "m3u8",
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "ja"
+                                             ],
+                         "logo":  "https://i.postimg.cc/0Q3DvLx7/animetsu.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "animeworld",
+                         "name":  "=���n+� AnimeWorld",
+                         "description":  "Watch AnimeWorld India",
+                         "version":  "1.0.0",
+                         "author":  "piratezoro9",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/animeworld.js",
+                         "enabled":  true,
+                         "formats":  "m3u8",
+                         "contentLanguage":  [
+                                                 "hi",
+                                                 "en",
+                                                 "ja"
+                                             ],
+                         "logo":  "https://i.postimg.cc/wxD6rVKX/animeworld.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "anizone",
+                         "name":  "AniZone",
+                         "description":  "AniZone high-quality anime streaming with multi-audio and soft subtitles",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/anizone.js",
+                         "enabled":  true,
+                         "formats":  "m3u8",
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://anizone.to/favicon.ico",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "castle",
+                         "name":  "=�Ŧ Castle",
+                         "description":  "Multi Lang provider",
+                         "version":  "2.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/castle.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/0NvGzFyK/castle.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "Cineby",
+                         "name":  "Cineby",
+                         "description":  "Multi-server movie and TV streaming G�� 4K/1080p/720p from Videasy network without subtitles",
+                         "version":  "1.9.2",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/Cineby.js",
+                         "enabled":  true,
+                         "formats":  "m3u8",
+                         "contentLanguage":  [
+                                                 "ar",
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/dV1HWbqX/cineby.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "cinefreak",
+                         "name":  "CineFreak",
+                         "description":  "Direct MKV streams from cinefreak.nl",
+                         "version":  "1.0.0",
+                         "author":  "piratezoro9",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/cinefreak.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mkv",
+                                         "mp4"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "hi"
+                                             ],
+                         "logo":  "https://i.postimg.cc/rpDB2284/cinefreak.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "cinemacity",
+                         "name":  "CinemaCity",
+                         "description":  "Multi Language Provider",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/cinemacity.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "hi",
+                                                 "ar"
+                                             ],
+                         "logo":  "https://i.postimg.cc/XYjKhS3b/cinemacity.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "cinemm",
+                         "name":  "CineMM",
+                         "description":  "Direct MP4 streams from cinemm.com G�� Next.js RSC API, quota bypass, multi-CDN (stream.cmreel.com, stream.cmapp.tv)",
+                         "version":  "1.0.0",
+                         "author":  "piratezoro9",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/cinemm.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "mkv"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/GtQX10hd/cinemm.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "cinevibe",
+                         "name":  "Cinevibe",
+                         "description":  "Cinevibe (Movies)",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  "movie",
+                         "filename":  "providers/cinevibe.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://www.google.com/s2/favicons?domain=cinevibe.online\u0026sz=128",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "ctgmovies",
+                         "name":  "CTGMovies",
+                         "description":  "English | Hindi Movies",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/ctgmovies.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "m3u8",
+                                         "mp4",
+                                         "mkv"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "hi"
+                                             ],
+                         "logo":  "https://i.postimg.cc/jSQmk9B3/ctgmovies.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "dahmermovies",
+                         "name":  "Dahmermovies",
+                         "description":  "1080p Movies from Dahmermovies",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/dahmermovies.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "mkv",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/hGt3dV6Z/dhamermovies.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "dahmermovies-4k",
+                         "name":  "Dahmermovies-TV",
+                         "description":  "Only works on Android TV",
+                         "version":  "1.0.1",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/dahmermovies-4k.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "mkv",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/hGt3dV6Z/dhamermovies.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "dooflix",
+                         "name":  "DooFlix",
+                         "description":  "Fast streaming provider with direct TMDB integration",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/dooflix.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "es"
+                                             ],
+                         "logo":  "https://i.postimg.cc/59H1DmRk/dooflix.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "doramogo",
+                         "name":  "Doramogo",
+                         "description":  "Diversidade de conte+�dos em 1080p",
+                         "version":  "2.0.0",
+                         "author":  "lawlietbr",
+                         "supportedTypes":  [
+                                                "tv",
+                                                "movie"
+                                            ],
+                         "filename":  "providers/doramogo.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "hls",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "pt-br"
+                                             ],
+                         "logo":  "https://www.doramogo.net/assets/doramogo/images/apple-touch-icon.webp?version=200.50.10",
+                         "limited":  false,
+                         "supportsExternalPlayer":  true,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+                                      "dorama",
+                                      "animes",
+                                      "series",
+                                      "filmes",
+                                      "legendado",
+                                      "dublado"
+                                  ]
+                     },
+                     {
+                         "id":  "dvdplay",
+                         "name":  "DVDPlay",
+                         "description":  "DVDPlay direct download links with HubCloud extraction",
+                         "version":  "1.0.2",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/dvdplay.js",
+                         "enabled":  true,
+                         "formats":  "mkv",
+                         "contentLanguage":  [
+                                                 "mal",
+                                                 "tam",
+                                                 "hin"
+                                             ],
+                         "logo":  "https://www.google.com/s2/favicons?domain=dvdplay.com\u0026sz=128",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "einthusan",
+                         "name":  "Einthustan",
+                         "description":  "1080p Movies in Multi-Lang",
+                         "version":  "1.0.0",
+                         "author":  "G��G��[D3ADLY]G��G��",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/einthusan.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "hi",
+                                                 "ta",
+                                                 "te",
+                                                 "ba"
+                                             ],
+                         "logo":  "https://i.postimg.cc/QCFYLyRR/einthusan.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "fibwatch",
+                         "name":  "FibWatch",
+                         "description":  "Watch Movies, Series, Anime in English \u0026 Hindi",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/fibwatch.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mkv",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "hi"
+                                             ],
+                         "logo":  "https://i.postimg.cc/sfLR6dMm/fibwatch.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "fshd",
+                         "name":  "FSHD",
+                         "description":  "FSHD - API | 1080p",
+                         "version":  "1.0.0",
+                         "author":  "saimuel",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/fshd.js",
+                         "enabled":  true,
+                         "formats":  "m3u8",
+                         "contentLanguage":  [
+                                                 "pt"
+                                             ],
+                         "logo":  "",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "goatapi",
+                         "name":  "=��� GoatAPI",
+                         "description":  "Movies via GoatAPI, indexed by TMDB",
+                         "version":  "1.0.0",
+                         "author":  "Aeyshx",
+                         "supportedTypes":  "movie",
+                         "filename":  "providers/goatapi.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "mkv",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/d1vkPZpY/goatapi.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "gramcinema",
+                         "name":  "GramCinema",
+                         "description":  "Streams in Multi Lang from Bollywood.eu.org. Requires Cookie Token.",
+                         "version":  "1.0.0",
+                         "author":  "Xyr0nX G�� =[D3adly]=",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/gramcinema.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "hi",
+                                                 "ta",
+                                                 "ru"
+                                             ],
+                         "logo":  "https://i.postimg.cc/WbNPW7Jv/gramcinema.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "hdhub4u",
+                         "name":  "HDHub4u",
+                         "description":  "Direct links from HDHub4u with high-speed download support",
+                         "version":  "1.0.1",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/hdhub4u.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/mryRTf0R/hdhub4u.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "hianime",
+                         "name":  "HiAnime",
+                         "description":  "HiAnime multi-server anime streaming with real-time mapping and subtitles",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/hianime.js",
+                         "enabled":  true,
+                         "formats":  "m3u8",
+                         "contentLanguage":  [
+                                                 "ja",
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/13SYJPTx/hianime.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "hindmoviez",
+                         "name":  "HindMoviez",
+                         "description":  "HindMoviez - Hindi \u0026 English Movies and Series (480p / 720p / 1080p / 4K)",
+                         "version":  "1.0.1",
+                         "author":  "Sanchit (@S4NCHITT) G�� Murph\u0027s Streams",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/hindmoviez.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "mkv",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "hi"
+                                             ],
+                         "logo":  "https://i.postimg.cc/5t55Csm4/hindmoviez.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "iptv-m3u",
+                         "name":  "IPTV M3U",
+                         "description":  "Filmes e s+�ries via listas M3U (IPTV Brasil)",
+                         "version":  "1.0.0",
+                         "author":  "AlvitoSR",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv",
+                                                "series",
+                                                "anime"
+                                            ],
+                         "filename":  "providers/iptv-m3u.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "hls",
+                                         "m3u8",
+                                         "ts"
+                                     ],
+                         "contentLanguage":  [
+                                                 "pt-br"
+                                             ],
+                         "logo":  "",
+                         "limited":  false,
+                         "supportsExternalPlayer":  true,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+                                      "filmes",
+                                      "s+�ries",
+                                      "iptv"
+                                  ]
+                     },
+                     {
+                         "id":  "kisskh",
+                         "name":  "=��� Kisskh",
+                         "description":  "Streams Korean dramas and movies from onlykdrama.top",
+                         "version":  "1.0.0",
+                         "author":  "Michat88",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/kisskh.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "ko",
+                                                 "ch",
+                                                 "ja",
+                                                 "th"
+                                             ],
+                         "logo":  "https://i.postimg.cc/2yLnTzPP/kisskh.jpg",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "kurage",
+                         "name":  "Kurage",
+                         "description":  "Kurage.live anime streaming with tRPC API and multi-server proxy support",
+                         "version":  "1.0.0",
+                         "author":  "Paregi12",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/kurage.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mkv",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "ja"
+                                             ],
+                         "logo":  "https://i.postimg.cc/3N2V7pHc/kurage.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "lordflix",
+                         "name":  "Lordflix",
+                         "description":  "Cascading multi-proxy decryption stream provider.",
+                         "version":  "1.0.0",
+                         "author":  "dustincos",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/lordflix.js",
+                         "enabled":  true,
+                         "formats":  "m3u8",
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/vZgHT15q/lordflix.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "mallumv",
+                         "name":  "MalluMV",
+                         "description":  "MalluMV direct links with support for Tamil, Telugu, Hindi, Malayalam, and Kannada movies",
+                         "version":  "1.0.1",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  "movie",
+                         "filename":  "providers/mallumv.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mkv",
+                                         "mp4"
+                                     ],
+                         "contentLanguage":  [
+                                                 "ta",
+                                                 "te",
+                                                 "hi",
+                                                 "ml",
+                                                 "kn"
+                                             ],
+                         "logo":  "https://mallumv.life/favicon.ico",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "megaembed",
+                         "name":  "MegaEmbed",
+                         "description":  "MegaEmbed - API| 1080p/720p",
+                         "version":  "1.0.0",
+                         "author":  "saimuel",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/megaembed.js",
+                         "enabled":  true,
+                         "formats":  "m3u8",
+                         "contentLanguage":  [
+                                                 "pt"
+                                             ],
+                         "logo":  "",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "movieblast",
+                         "name":  "MovieBlast",
+                         "description":  "MovieBlast - Hindi, Tamil, Telugu \u0026 English Movies/Series with multi-quality streams",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/movieblast.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "mkv",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "hi",
+                                                 "ta",
+                                                 "te"
+                                             ],
+                         "logo":  "https://i.postimg.cc/qqkLSyhN/movieblast.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "moviebox",
+                         "name":  "MovieBox",
+                         "description":  "MovieBox - Hindi, Tamil, Telugu \u0026 English Movies/Series with multi-quality streams",
+                         "version":  "1.0.1",
+                         "author":  "Xyr0nX",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/moviebox.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "hi",
+                                                 "ta",
+                                                 "te"
+                                             ],
+                         "logo":  "https://i.postimg.cc/TPwkfqHh/moviebox.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "movies4u",
+                         "name":  "Movies4u",
+                         "description":  "Hollywood, Bollywood movies including web series, \u0026 Hindi dubbed movies in HD quality",
+                         "version":  "1.0.2",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  "movie",
+                         "filename":  "providers/movies4u.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "hi",
+                                                 "ta"
+                                             ],
+                         "logo":  "https://i.postimg.cc/J0QG1QhQ/movies4u.jpg",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "moviesdrive",
+                         "name":  "MoviesDrive",
+                         "description":  "MoviesDrive - Movies and TV shows with multiple streaming servers",
+                         "version":  "3.0.0",
+                         "author":  "PirateZoro9",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/moviesdrive.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "mkv",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "hi"
+                                             ],
+                         "logo":  "https://i.postimg.cc/bwDbhq9q/moviesdrive.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "movieshunt",
+                         "name":  "=�ļ MoviesHunt",
+                         "description":  "Hollywood \u0026 Bollywood Movies in Multi Language",
+                         "version":  "1.0.0",
+                         "author":  "piratezoro9",
+                         "supportedTypes":  "movie",
+                         "filename":  "providers/movieshunt.js",
+                         "enabled":  true,
+                         "formats":  "m3u8",
+                         "contentLanguage":  [
+                                                 "hi",
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/3Rc34LJj/movieshunt.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "moviesmod",
+                         "name":  "MoviesMod",
+                         "description":  "Movie and TV show streams from MoviesMod with multiple quality options",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/moviesmod.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8",
+                                         "mkv"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/YqWDJtWW/moviesmod.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "movix",
+                         "name":  "Movix VF",
+                         "description":  "Movies and TV series in English \u0026 French (dubbed/subtitled)",
+                         "version":  "1.0.0",
+                         "author":  "wooodyhood",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/movix.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "fr"
+                                             ],
+                         "logo":  "https://i.postimg.cc/XYrPQm87/movix.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "mycima",
+                         "name":  "MyCima",
+                         "description":  "Arabic streaming provider with movies, series and anime",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/mycima.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "ar"
+                                             ],
+                         "logo":  "https://www.google.com/s2/favicons?domain=wecima.show\u0026sz=128",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "myembed",
+                         "name":  "MyEmbed",
+                         "description":  "API de filmes e s+�ries",
+                         "version":  "1.0.0",
+                         "author":  "lawlietbr",
+                         "supportedTypes":  [
+                                                "tv",
+                                                "movie"
+                                            ],
+                         "filename":  "providers/myembed.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "hls",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "pt-br"
+                                             ],
+                         "logo":  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzFhMWExYSIgcng9IjEwIiByeT0iMTAiIC8+CiAgPHRleHQgeD0iNTAiIHk9IjY1IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNDAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjZmZmZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5NQjwvdGV4dD4KPC9zdmc+",
+                         "limited":  false,
+                         "supportsExternalPlayer":  true,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+                                      "player",
+                                      "embed"
+                                  ]
+                     },
+                     {
+                         "id":  "mywallpaper",
+                         "name":  "My Wallpaper",
+                         "description":  "CDN brasileiro de animes",
+                         "version":  "2.0.0",
+                         "author":  "lawlietbr",
+                         "supportedTypes":  "tv",
+                         "filename":  "providers/mywallpaper.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "hls",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "pt-br"
+                                             ],
+                         "logo":  "https://image2url.com/r2/default/images/1773218651086-4a0ea24e-6e2b-4a22-ab18-8cb28d1b6f23.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  true,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "nakios",
+                         "name":  "Nakios",
+                         "description":  "Mainly French, Some English \u0026 4K Quality",
+                         "version":  "3.8.2",
+                         "author":  "Wooodyhood",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/nakios.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "fr",
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/nLwY1pJB/nakios.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "netmirror",
+                         "name":  "NetMirror",
+                         "description":  "Netflix | Prime | Disney",
+                         "version":  "1.0.0",
+                         "author":  "Dustincos",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/netmirror.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8",
+                                         "mkv"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "hi",
+                                                 "ta",
+                                                 "te"
+                                             ],
+                         "logo":  "https://i.postimg.cc/L64M3bYV/netmirror.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "notorrent",
+                         "name":  "NoTorrent",
+                         "description":  "Non-P2P direct resolution proxy.",
+                         "version":  "1.0.0",
+                         "author":  "Dustincos",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/notorrent.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "es"
+                                             ],
+                         "logo":  "https://i.postimg.cc/FsSpNcVP/notorrent.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "onetouchtv",
+                         "name":  "OneTouchTV",
+                         "description":  "Watch Asian Drama \u0026 Anime",
+                         "version":  "1.0.0",
+                         "author":  "Kabir",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/onetouchtv.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "mkv",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "ko",
+                                                 "ja",
+                                                 "zh"
+                                             ],
+                         "logo":  "https://i.postimg.cc/PNns1nRL/onetouchtv.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "onlykdrama",
+                         "name":  "=��� OnlyKDrama",
+                         "description":  "Asian Drama",
+                         "version":  "1.0.0",
+                         "author":  "Moiz Ahmed + Codex",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/onlykdrama.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "mkv",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "ko"
+                                             ],
+                         "logo":  "https://i.postimg.cc/dtX84Gqc/onlykdrama.jpg",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "peachify",
+                         "name":  "Peachify",
+                         "description":  "Peachify - API | 1080p",
+                         "version":  "1.0.0",
+                         "author":  "saimuel",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/peachify.js",
+                         "enabled":  true,
+                         "formats":  "m3u8",
+                         "contentLanguage":  [
+                                                 "pt"
+                                             ],
+                         "logo":  "",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "playimdb",
+                         "name":  "PlayIMDb",
+                         "description":  "High-Speed Direct Streaming for Movies (IMDb ID Extract)",
+                         "version":  "2.0.0",
+                         "author":  "PirateZoro9",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/playimdb.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "mkv",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "hi"
+                                             ],
+                         "logo":  "https://i.postimg.cc/KzjPtYWY/imdb.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "pomfy",
+                         "name":  "Pomfy",
+                         "description":  "Filmes e s+�ries em 1080p via Pomfy API",
+                         "version":  "1.0.0",
+                         "author":  "lawlietbr, saimuelbr",
+                         "supportedTypes":  [
+                                                "tv",
+                                                "movie"
+                                            ],
+                         "filename":  "providers/pomfy.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "hls",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "pt-br"
+                                             ],
+                         "logo":  "https://pomfy.online/pomfylogofullcolor.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  true,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+                                      "filmes",
+                                      "s+�ries"
+                                  ]
+                     },
+                     {
+                         "id":  "purstream",
+                         "name":  "Purstream",
+                         "description":  "Films and series in French (VF) / subtitled French (VOSTFR) / multi-language (MULTI) from purstream.art.",
+                         "version":  "3.0.0",
+                         "author":  "wooodyhood",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/purstream.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "fr"
+                                             ],
+                         "logo":  "https://i.postimg.cc/7L5shxmC/purstream.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "redeflix",
+                         "name":  "RedeFlix",
+                         "description":  "RedeFlix - API | 1080p",
+                         "version":  "1.0.0",
+                         "author":  "saimuel",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/redeflix.js",
+                         "enabled":  true,
+                         "formats":  "m3u8",
+                         "contentLanguage":  [
+                                                 "pt"
+                                             ],
+                         "logo":  "",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "saimo-tv",
+                         "name":  "Saimo TV",
+                         "description":  "Filmes e s+�ries via Saimo TV",
+                         "version":  "1.0.0",
+                         "author":  "AlvitoSR",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv",
+                                                "series",
+                                                "anime"
+                                            ],
+                         "filename":  "providers/saimo-tv.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "hls",
+                                         "m3u8",
+                                         "mp4"
+                                     ],
+                         "contentLanguage":  [
+                                                 "pt-br"
+                                             ],
+                         "logo":  "",
+                         "limited":  false,
+                         "supportsExternalPlayer":  true,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+                                      "filmes",
+                                      "s+�ries",
+                                      "animes"
+                                  ]
+                     },
+                     {
+                         "id":  "showbox",
+                         "name":  "ShowBox",
+                         "description":  "ShowBox streaming with multiple quality options and versions",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/showbox.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "mkv",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/8c5XGzsx/showbox.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "streamflix",
+                         "name":  "StreamFlix",
+                         "description":  "Direct links via StreamFlix API",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/streamflix.js",
+                         "enabled":  true,
+                         "formats":  "mkv",
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "hin"
+                                             ],
+                         "logo":  "https://streamflix.app/assets/images/logo-text-148x72.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "toflix",
+                         "name":  "ToFlix",
+                         "description":  "Films \u0026 S+�ries in English and French",
+                         "version":  "1.0.0",
+                         "author":  "wooodyhood",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/toflix.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "fr"
+                                             ],
+                         "logo":  "https://i.postimg.cc/yNxJYqkv/toflix.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "tomato",
+                         "name":  "Tomato",
+                         "description":  "Tomato API PT-BR leg/dub | 1080p/720p",
+                         "version":  "1.0.0",
+                         "author":  "AlvitoSR",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv",
+                                                "series",
+                                                "anime"
+                                            ],
+                         "filename":  "providers/tomato.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "hls",
+                                         "m3u8",
+                                         "mp4"
+                                     ],
+                         "contentLanguage":  [
+                                                 "pt-br"
+                                             ],
+                         "logo":  "",
+                         "limited":  false,
+                         "supportsExternalPlayer":  true,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "topcartoons",
+                         "name":  "TopCartoons",
+                         "description":  "Popular cartoons streaming",
+                         "version":  "1.0.0",
+                         "author":  "Phisher",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/topcartoons.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/3xVsbwp8/topcartoons.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "torrentio",
+                         "name":  "=��� Torrentio",
+                         "description":  "Movies and shows streaming",
+                         "version":  "1.0.0",
+                         "author":  "Phisher",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/torrentio.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "hi"
+                                             ],
+                         "logo":  "https://i.postimg.cc/ZRYTCy0T/torrentio.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "uhdmovies",
+                         "name":  "UHDMovies",
+                         "description":  "UHD Movies streaming with multiple resolution",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/uhdmovies.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/KzDBBdbK/uhdmovies.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "vegamovies",
+                         "name":  "VegaMovies",
+                         "description":  "VegaMovies streaming with high-quality direct links",
+                         "version":  "2.0",
+                         "author":  "piratezoro9",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/vegamovies.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "mkv"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "hi"
+                                             ],
+                         "logo":  "https://i.postimg.cc/TwYK26jn/vegamovies.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "videasy",
+                         "name":  "VidEasy",
+                         "description":  "Videasy streaming with encrypted TMDB ID support for movies and TV shows",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/videasy.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/7LHYMtVV/videasy.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "vidfast",
+                         "name":  "VidFast",
+                         "description":  "Stream movies and TV shows from vidfast.pro.",
+                         "version":  "1.0.0",
+                         "author":  "Dustincos",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/vidfast.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/0Qp8PSx5/vidfast.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "vidlink",
+                         "name":  "VidLink",
+                         "description":  "Vidlink streaming with encrypted TMDB ID support for movies and TV shows",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/vidlink.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/RZRHQd75/vidlink.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "vidnest",
+                         "name":  "Vidnest",
+                         "description":  "Vidnest streaming with encrypted AES-GCM sources",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/vidnest.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://vidnest.fun/favicon.ico",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "vidnest-anime",
+                         "name":  "VidnestAnime",
+                         "description":  "Vidnest anime streaming with TMDBG��AniList mapping and 5 servers (hindi, satoru, miko, pahe, anya)",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/vidnest-anime.js",
+                         "enabled":  true,
+                         "formats":  "m3u8",
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "hi",
+                                                 "ja"
+                                             ],
+                         "logo":  "https://vidnest.fun/favicon.ico",
+                         "limited":  true,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "vidrock",
+                         "name":  "=��� VidRock",
+                         "description":  "VidRock - 1080p 480p and 360p",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/vidrock.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/brxL7qg3/multivid.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "vidsrc",
+                         "name":  "VidSrc",
+                         "description":  "Vidsrc - The best place to watch movies and TV shows online for free. Stream in 1080p HD",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/vidsrc.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://i.postimg.cc/ncMLBsLJ/vidsrc.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "vixsrc",
+                         "name":  "VixSrc",
+                         "description":  "VixSrc - The best place to watch movies and TV shows online for free. Stream in 1080p HD",
+                         "version":  "1.0.0",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/vixsrc.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "Ita"
+                                             ],
+                         "logo":  "https://i.postimg.cc/1tHrBvzs/vixsrc.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "xpass",
+                         "name":  "XPass",
+                         "description":  "Play Movie/TV by TMDB ID or IMDb ID",
+                         "version":  "1.0.0",
+                         "author":  "Dustincos",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/xpass.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "mkv",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "hi"
+                                             ],
+                         "logo":  "https://i.postimg.cc/tgqNQxdy/xpass.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "yflix",
+                         "name":  "YFlix",
+                         "description":  "YFlix streaming",
+                         "version":  "1.1.2",
+                         "author":  "Nuvio Team",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/yflix.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "m3u8",
+                                         "mp4"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en"
+                                             ],
+                         "logo":  "https://yflix.to/assets/uploads/2f505f3de3c99889c1a72557f3e3714fc0c457b0.png",
+                         "limited":  true,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     },
+                     {
+                         "id":  "zinkmovies",
+                         "name":  "ZinkMovies",
+                         "description":  "Bollywood Movies, Hollywood Movies, South Indian Movies, Hindi Dubbed Movies, Web Series, OTT Releases, \u0026 Trending Cinema",
+                         "version":  "1.0.0",
+                         "author":  "Kabir",
+                         "supportedTypes":  [
+                                                "movie",
+                                                "tv"
+                                            ],
+                         "filename":  "providers/zinkmovies.js",
+                         "enabled":  true,
+                         "formats":  [
+                                         "mp4",
+                                         "mkv",
+                                         "m3u8"
+                                     ],
+                         "contentLanguage":  [
+                                                 "en",
+                                                 "hi",
+                                                 "ta",
+                                                 "te"
+                                             ],
+                         "logo":  "https://i.postimg.cc/XqCZyCgp/zinkmovies.png",
+                         "limited":  false,
+                         "supportsExternalPlayer":  false,
+                         "disabledPlatforms":  [
+
+                                               ],
+                         "tags":  [
+
+                                  ]
+                     }
+                 ],
+    "name":  "Mega Nuvio Combined",
+    "version":  "1.0.0"
 }

@@ -1,3 +1,5 @@
+// saimo-tv - bundled provider
+// http.js
 const BASE_URL = 'https://sfumaypqhxzjssarmyrn.supabase.co/rest/v1/rpc';
 const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmdW1heXBxaHh6anNzYXJteXJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MDU1ODUsImV4cCI6MjA4Nzk4MTU4NX0.Ff3DMipcepJuFXuhaXLsievmPG-Czu6FutHZJVxJTO8';
 
@@ -15,6 +17,7 @@ async function rpc(fn, body = {}) {
     return response.json();
 }
 
+// extractor.js
 function normalizeTitle(title) {
     return title
         .normalize('NFD')
@@ -47,6 +50,7 @@ async function findItemByTmdbId(tmdbId, mediaType, tmdbTitle) {
 
     const searchTerms = getSearchVariations(tmdbTitle);
     for (const term of searchTerms) {
+        console.log(`[SaimoTV] Buscando por: "${term}"`);
         try {
             const catalog = await rpc('get_catalog', {
                 p_type: type,
@@ -60,6 +64,7 @@ async function findItemByTmdbId(tmdbId, mediaType, tmdbTitle) {
                 for (const item of catalog.items) {
                     const itemTmdbId = (item.tmdb && item.tmdb.id) ? String(item.tmdb.id) : null;
                     if (itemTmdbId === targetId) {
+                        console.log(`[SaimoTV] Encontrado pelo TMDB ID: ${item.name}`);
                         return await rpc('get_item', { p_id: item.id });
                     }
                 }
@@ -80,13 +85,16 @@ async function findItemByTmdbId(tmdbId, mediaType, tmdbTitle) {
                     }
                 }
                 if (bestMatch) {
+                    console.log(`[SaimoTV] Melhor correspondência por título: ${bestMatch.name} (score ${bestScore})`);
                     return await rpc('get_item', { p_id: bestMatch.id });
                 }
             }
         } catch (e) {
+            console.log(`[SaimoTV] Erro na busca por "${term}":`, e.message);
         }
     }
 
+    console.log('[SaimoTV] Iniciando varredura paginada (até 5 páginas)...');
     try {
         let page = 1;
         const maxPages = 5;
@@ -101,6 +109,7 @@ async function findItemByTmdbId(tmdbId, mediaType, tmdbTitle) {
             for (const item of catalog.items) {
                 const itemTmdbId = (item.tmdb && item.tmdb.id) ? String(item.tmdb.id) : null;
                 if (itemTmdbId === targetId) {
+                    console.log(`[SaimoTV] Encontrado na página ${page}: ${item.name}`);
                     return await rpc('get_item', { p_id: item.id });
                 }
             }
@@ -108,6 +117,7 @@ async function findItemByTmdbId(tmdbId, mediaType, tmdbTitle) {
             page++;
         }
     } catch (e) {
+        console.log('[SaimoTV] Erro na varredura:', e.message);
     }
 
     throw new Error(`"${tmdbTitle}" (TMDB ${tmdbId}) não encontrado no Saimo TV.`);
@@ -135,9 +145,12 @@ async function getStreamUrl(tmdbId, mediaType, tmdbTitle, season, episode) {
     return item.url;
 }
 
+// index.js
 const TMDB_API_KEY = 'c6c6f4c1cb446e0d5c305f3fa7eeb4a9';
 
 async function getStreams(tmdbId, mediaType, season, episode) {
+    console.log(`[SaimoTV] Buscando: TMDB ${tmdbId}, ${mediaType}, S${season}E${episode}`);
+
     if (!['movie', 'tv'].includes(mediaType)) {
         return [];
     }
@@ -149,8 +162,10 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         if (!tmdbRes.ok) throw new Error(`TMDB fetch error: ${tmdbRes.status}`);
         const tmdbData = await tmdbRes.json();
         const title = tmdbData.title || tmdbData.name;
+        console.log(`[SaimoTV] Título: ${title}`);
 
         const url = await getStreamUrl(tmdbId, mediaType, title, season, episode);
+        console.log(`[SaimoTV] URL original: ${url}`);
 
         return [{
             name: 'Saimo TV',
@@ -164,6 +179,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
             }
         }];
     } catch (error) {
+        console.error('[SaimoTV] Erro:', error.message);
         return [];
     }
 }

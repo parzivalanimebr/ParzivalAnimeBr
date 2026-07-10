@@ -1,3 +1,6 @@
+// IPTV M3U Provider para Nuvio — v5 (RANGE paralelo, rápido)
+'use strict';
+
 const TMDB_KEY = 'c6c6f4c1cb446e0d5c305f3fa7eeb4a9';
 
 const M3U_LISTS = [
@@ -72,7 +75,7 @@ async function rangeSearch(url, targets) {
         } catch (e) { return null; }
     }
     let hit = scanChunk(first.text, targets);
-    if (hit) { return hit; }
+    if (hit) { console.log('[IPTV-M3U] ✓ achou em ' + url.split('/').pop() + ' (pedaço 1)'); return hit; }
 
     const total = first.total;
     const numChunks = total ? Math.min(Math.ceil(total / CHUNK_SIZE), MAX_CHUNKS) : MAX_CHUNKS;
@@ -87,7 +90,10 @@ async function rangeSearch(url, targets) {
         for (let c = 0; c < chunks.length; c++) {
             if (!chunks[c].text) continue;
             hit = scanChunk(chunks[c].text, targets);
-            if (hit) { return hit; }
+            if (hit) {
+                console.log('[IPTV-M3U] ✓ achou em ' + url.split('/').pop() + ' (pedaço ' + (chunks[c].index + 1) + ')');
+                return hit;
+            }
         }
     }
     return null;
@@ -101,6 +107,7 @@ function guessQuality(url) {
 }
 
 async function getStreams(tmdbId, mediaType, season, episode) {
+    console.log('[IPTV-M3U] tmdb=' + tmdbId + ' ' + mediaType + ' S' + season + 'E' + episode);
     if (mediaType !== 'movie' && mediaType !== 'tv') return [];
 
     try {
@@ -108,6 +115,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         const tmdb = await fetch('https://api.themoviedb.org/3/' + t + '/' + tmdbId + '?api_key=' + TMDB_KEY + '&language=pt-BR').then(function (r) { return r.json(); });
         const ptTitle = tmdb.name || tmdb.title || '';
         const origTitle = tmdb.original_name || tmdb.original_title || '';
+        console.log('[IPTV-M3U] "' + ptTitle + '"');
         if (!ptTitle && !origTitle) return [];
 
         const targets = [];
@@ -132,6 +140,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
             const n = normalizeName(rawTargets[i]);
             if (n && targets.indexOf(n) === -1) targets.push(n);
         }
+        console.log('[IPTV-M3U] procurando: ' + targets.join(' | '));
 
         const promises = [];
         for (let i = 0; i < M3U_LISTS.length; i++) {
@@ -153,9 +162,11 @@ async function getStreams(tmdbId, mediaType, season, episode) {
             });
         }
 
+        console.log('[IPTV-M3U] ✓ ' + found.length + ' streams');
         return found;
 
     } catch (e) {
+        console.error('[IPTV-M3U] ✗', e.message);
         return [];
     }
 }

@@ -1,3 +1,5 @@
+// animesonlineto - bundled provider
+// http.js
 const BASE_URL = 'https://animesonlineto.to';
 
 async function fetchJson(url, opts = {}) {
@@ -21,6 +23,7 @@ async function fetchJson(url, opts = {}) {
     return response.json();
 }
 
+// extractor.js
 function normalize(str) {
     return str
         .normalize('NFD')
@@ -66,10 +69,12 @@ function selectBestSlug(results, rawTitle, season) {
     });
 
     scored.sort((a, b) => b.score - a.score);
+    console.log('[selectBestSlug] Candidatos:', scored.map(s => `${s.item.slug} (${s.score})`).join(', '));
     return scored[0]?.item;
 }
 
 async function getSlug(rawTitle, season) {
+    console.log(`[getSlug] Procurando slug para: "${rawTitle}" temporada ${season}`);
     const titleVariations = generateTitleVariations(rawTitle);
 
     for (const title of titleVariations) {
@@ -81,10 +86,12 @@ async function getSlug(rawTitle, season) {
             if (list.length > 0) {
                 const best = selectBestSlug(list, normalizedTitle, season);
                 if (best) {
+                    console.log(`[getSlug] Selecionado via busca: slug=${best.slug}`);
                     return best.slug;
                 }
             }
         } catch (e) {
+            console.log(`[getSlug] Erro na busca por "${normalizedTitle}":`, e.message);
         }
     }
 
@@ -99,17 +106,18 @@ async function getSlug(rawTitle, season) {
         );
     }
     variants.push(baseSlug.replace(/-+/g, '-'));
+    console.log('[getSlug] Tentando slugs gerados:', variants);
     for (const slug of variants) {
         try {
             const testData = await fetchJson(`${BASE_URL}/api-proxy/animes/${slug}`);
             if (testData?.episodes) {
                 const hasSeason = testData.episodes.some(ep => Number(ep.season_number) === season);
                 if (hasSeason || testData.episodes.length > 0) {
+                    console.log(`[getSlug] Slug funcionou: ${slug}`);
                     return slug;
                 }
             }
-        } catch (e) {
-        }
+        } catch (e) {}
     }
     throw new Error(`Slug não encontrado para: ${rawTitle} temporada ${season}`);
 }
@@ -124,12 +132,14 @@ async function fetchAnimeDetails(slug) {
 async function getStreamOptions(tmdbTitle, season, episode, episodeNumbers) {
     const slug = await getSlug(tmdbTitle, season);
     const anime = await fetchAnimeDetails(slug);
+    console.log(`[getStreamOptions] Anime: ${anime.title}, total de episódios no site: ${anime.episodes.length}`);
 
     let matches = anime.episodes.filter(ep =>
         Number(ep.season_number) === season && Number(ep.episode_number) === episode
     );
 
     if (matches.length === 0 && episodeNumbers.length > 0) {
+        console.log('[getStreamOptions] Site não separa temporadas, usando mapeamento TMDB');
         matches = anime.episodes.filter(ep =>
             episodeNumbers.includes(Number(ep.episode_number)) && Number(ep.episode_number) === episode
         );
@@ -142,12 +152,12 @@ async function getStreamOptions(tmdbTitle, season, episode, episodeNumbers) {
         try {
             const watchData = await fetchJson(`${BASE_URL}/api-proxy/episodes/${ep.id}/watch`);
             results.push({ url: watchData.url, audioType: ep.audio_type });
-        } catch (e) {
-        }
+        } catch (e) {}
     }
     return results;
 }
 
+// index.js
 const TMDB_API_KEY = 'c6c6f4c1cb446e0d5c305f3fa7eeb4a9';
 
 async function getEpisodeNumbersFromTMDB(tmdbId, season) {
@@ -159,7 +169,10 @@ async function getEpisodeNumbersFromTMDB(tmdbId, season) {
 }
 
 async function getStreams(tmdbId, mediaType, season, episode) {
+    console.log(`[AnimesOnlineTo] Buscando: TMDB ${tmdbId}, ${mediaType}, S${season}E${episode}`);
+
     if (mediaType !== 'tv' || !episode) {
+        console.log('[AnimesOnlineTo] Apenas animes (tv) com episódio são suportados');
         return [];
     }
 
@@ -170,8 +183,10 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         if (!tmdbRes.ok) throw new Error(`TMDB error ${tmdbRes.status}`);
         const tmdbData = await tmdbRes.json();
         const title = tmdbData.name || tmdbData.original_name;
+        console.log(`[AnimesOnlineTo] Título TMDB: ${title}`);
 
         const episodeNumbers = await getEpisodeNumbersFromTMDB(tmdbId, season);
+        console.log(`[AnimesOnlineTo] Episódios da temporada (TMDB): ${episodeNumbers.length} encontrados`);
 
         const options = await getStreamOptions(title, season, episode, episodeNumbers);
 
@@ -187,6 +202,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
             }
         }));
     } catch (error) {
+        console.error('[AnimesOnlineTo] Erro:', error.message);
         return [];
     }
 }
